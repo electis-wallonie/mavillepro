@@ -1,0 +1,129 @@
+---
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import Check from './Check.astro';
+import { photo } from '../lib/images';
+import { label, type Metier } from '../data/metiers';
+import { CTA, u } from '../lib/site';
+
+type Tuile = { metier: Metier; slug: string };
+type Props = { id?: string; tuiles: Tuile[]; metiers: Metier[]; commune?: string; artisan?: string };
+const { id = 'devis', tuiles, metiers, commune = '', artisan = 'artisan' } = Astro.props;
+const endpoint = import.meta.env.PUBLIC_FORM_ENDPOINT ?? '';
+const de = (n: string) => (/^[AEIOUYÉÈÊÀÂÎÔ]/i.test(n) ? `d'${n}` : `de ${n}`);
+const merci = commune ? `Un ${artisan} ${de(commune)} ou des environs vous rappelle sous 24 h.` : `Un ${artisan} de votre secteur vous rappelle sous 24 h.`;
+---
+<form class="form js-devis" id={id} action={endpoint || u('/merci/')} method="post" data-endpoint={endpoint} novalidate>
+  <div class="form-h"><strong>Votre devis gratuit</strong><span class="js-lab">Étape 1 sur 2</span></div>
+  <div class="prog"><i class="on"></i><i class="js-bar"></i></div>
+
+  <div class="js-s1" style="display:flex;flex-direction:column;gap:12px">
+    <p style="font-weight:700;font-size:17px">Quel ouvrage souhaitez-vous ?</p>
+    <p class="mu" style="font-size:13px;margin-top:-6px">Votre projet n'est pas dans la liste ? Choisissez « Autre projet ».</p>
+    <div class="tiles">
+      {tuiles.map(({ metier, slug }) => {
+        const im = photo(metier.slug, slug);
+        const lab = slug === 'autre' ? 'Autre projet' : label(metier, slug);
+        return (
+          <button type="button" class={`tile${slug === 'autre' ? ' autre' : ''}`} data-o={lab} data-m={metier.nom}>
+            <span class="v">
+              {slug === 'autre' ? <span class="plus"><Icon name="plus" size={26} color="#F8863D" stroke={2.6} /></span>
+                : im ? <Image src={im} alt="" width={160} loading="lazy" />
+                : <span class="plus"><Icon name={metier.icone} size={26} color="#0034B8" /></span>}
+            </span>
+            <span>{lab}</span>
+          </button>
+        );
+      })}
+    </div>
+  </div>
+
+  <div class="js-s2" hidden style="flex-direction:column;gap:12px">
+    <div class="chosen"><span>Projet : <span class="js-o"></span></span><button type="button" class="js-back">Modifier</button></div>
+    <label class="js-autre" hidden>Quel ouvrage ?
+      <select name="ouvrage_detail">
+        <option value="">Choisissez dans la liste</option>
+        {metiers.map((m) => (
+          <optgroup label={m.nom}>{m.prestations.map((p) => <option>{p.label}</option>)}</optgroup>
+        ))}
+        <option>Autre (je précise dans le message)</option>
+      </select>
+    </label>
+    <div class="f2">
+      <label>Prénom<input name="prenom" autocomplete="given-name" required /></label>
+      <label>Nom<input name="nom" autocomplete="family-name" required /></label>
+      <label>Téléphone<input name="telephone" type="tel" autocomplete="tel" inputmode="tel" required /></label>
+      <label>E-mail<input name="email" type="email" autocomplete="email" required /></label>
+    </div>
+    <label>Message<textarea name="message" rows="3" placeholder="Décrivez votre projet en quelques mots (lieu, délai souhaité…)"></textarea></label>
+    <input type="hidden" name="ouvrage" />
+    <input type="hidden" name="metier" />
+    <input type="hidden" name="commune" value={commune} />
+    <input type="hidden" name="page" />
+    <label class="hp" aria-hidden="true">Ne pas remplir<input name="site_web" tabindex="-1" autocomplete="off" /></label>
+    <p class="js-err" role="alert" style="color:#b42318;font-weight:700;font-size:14px" hidden>Merci de remplir votre prénom, votre nom, un téléphone et un e-mail valides.</p>
+    <button type="submit" class="btn btn-o">{CTA}</button>
+  </div>
+
+  <div class="js-s3 done" hidden>
+    <span style="width:60px;height:60px;border-radius:50%;background:#F8863D;display:flex;align-items:center;justify-content:center"><Icon name="check" size={30} color="#1a1a1a" stroke={3} /></span>
+    <strong>Demande envoyée</strong>
+    <span class="mu">{merci}</span>
+  </div>
+
+  <p class="mention">Gratuit et sans engagement. Vos coordonnées sont transmises uniquement à l'artisan qui traite votre demande. <a href={u('/confidentialite/')}>Confidentialité</a></p>
+  <div class="reass"><span><Check />Gratuit</span><span><Check />Sans engagement</span><span><Check />Rappel sous 24 h</span></div>
+</form>
+
+<script>
+  document.querySelectorAll<HTMLFormElement>('.js-devis').forEach((f) => {
+    if (f.dataset.ready) return;
+    f.dataset.ready = '1';
+    const q = <T extends Element>(s: string) => f.querySelector(s) as T;
+    const s1 = q<HTMLElement>('.js-s1'), s2 = q<HTMLElement>('.js-s2'), s3 = q<HTMLElement>('.js-s3');
+    const show = (n: number) => {
+      s1.hidden = n !== 1; s2.hidden = n !== 2; s3.hidden = n !== 3;
+      s1.style.display = n === 1 ? 'flex' : 'none';
+      s2.style.display = n === 2 ? 'flex' : 'none';
+      q<HTMLElement>('.js-bar').classList.toggle('on', n > 1);
+      q<HTMLElement>('.js-lab').textContent = n === 1 ? 'Étape 1 sur 2' : n === 2 ? 'Étape 2 sur 2' : 'Terminé';
+    };
+    const choisir = (o: string, m: string) => {
+      q<HTMLElement>('.js-o').textContent = o;
+      (f.elements.namedItem('ouvrage') as HTMLInputElement).value = o;
+      (f.elements.namedItem('metier') as HTMLInputElement).value = m;
+      q<HTMLElement>('.js-autre').hidden = o !== 'Autre projet';
+      show(2);
+      (f.elements.namedItem('prenom') as HTMLInputElement).focus({ preventScroll: true });
+    };
+    f.querySelectorAll<HTMLButtonElement>('.tile').forEach((t) => t.addEventListener('click', () => choisir(t.dataset.o!, t.dataset.m!)));
+    q<HTMLButtonElement>('.js-back').addEventListener('click', () => show(1));
+    // Boutons « Devis portail gratuit » ailleurs dans la page
+    document.querySelectorAll<HTMLAnchorElement>(`a[data-preset][href="#${f.id}"]`).forEach((a) =>
+      a.addEventListener('click', () => choisir(a.dataset.preset!, a.dataset.m || '')));
+    f.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const d = new FormData(f);
+      const tel = String(d.get('telephone') || '').replace(/[^\d+]/g, '');
+      const ok = d.get('prenom') && d.get('nom') && tel.length >= 9 && /\S+@\S+\.\S+/.test(String(d.get('email')));
+      q<HTMLElement>('.js-err').hidden = !!ok;
+      if (!ok || d.get('site_web')) return;
+      d.set('page', location.pathname);
+      const btn = f.querySelector('button[type=submit]') as HTMLButtonElement;
+      btn.disabled = true;
+      try {
+        if (f.dataset.endpoint) {
+          const r = await fetch(f.dataset.endpoint, { method: 'POST', body: d });
+          if (!r.ok) throw new Error(String(r.status));
+        }
+        show(3);
+        (window as any).dataLayer?.push({ event: 'demande_devis', ouvrage: d.get('ouvrage') });
+      } catch {
+        q<HTMLElement>('.js-err').textContent = "L'envoi n'a pas abouti. Vérifiez votre connexion et réessayez.";
+        q<HTMLElement>('.js-err').hidden = false;
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  });
+</script>

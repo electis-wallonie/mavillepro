@@ -1,0 +1,46 @@
+---
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import { photo } from '../lib/images';
+import { label, ville, type Metier } from '../data/metiers';
+type Props = { metier: Metier; nom?: string; complements?: Record<string, string> };
+const { metier: m, nom, complements = {} } = Astro.props;
+const montres = new Set(m.groupes.flatMap((g) => g.items));
+const autres = m.prestations.filter((p) => !montres.has(p.slug));
+---
+<section class="sec alt" id="prestations">
+  <div class="wrap">
+    <div class="head">
+      <h2>{nom ? `Nos ouvrages en ${m.nom.toLowerCase()} à ${nom}` : `Nos prestations en ${m.nom.toLowerCase()}`}</h2>
+      <span class="bar"></span>
+      <p>Chaque ouvrage est fabriqué ou fourni sur mesure, puis posé par un artisan {m.artisan}{nom ? ` intervenant à ${nom}` : ' de votre secteur'}.</p>
+    </div>
+    {m.groupes.map((g) => (
+      <article class="card ouvr">
+        <div class="txt">
+          <h3>{ville(g.titre, nom)}</h3>
+          <p class="mu">{g.texte}</p>
+          {complements[g.key] && <p class="mu">{complements[g.key]}</p>}
+          <div><a class="btn btn-o" href="#devis" data-preset={label(m, g.items[0])} data-m={m.nom}>{g.cta}</a></div>
+        </div>
+        <div class="ims">
+          {g.items.map((s) => {
+            const im = photo(m.slug, s);
+            return (
+              <div class="pc">
+                <div class="v">{im ? <Image src={im} alt={`${label(m, s)} sur mesure${nom ? ' à ' + nom : ''}`} width={300} loading="lazy" /> : <Icon name={m.icone} size={56} color="#0034B8" stroke={1.5} />}</div>
+                <span>{label(m, s)}</span>
+              </div>
+            );
+          })}
+        </div>
+      </article>
+    ))}
+    {autres.length > 0 && (
+      <div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+        <h3 style="font-size:18px">Autres travaux de {m.nom.toLowerCase()}{nom ? ` à ${nom}` : ''}</h3>
+        <div class="chips">{autres.map((p) => <a href="#devis" data-preset="Autre projet" data-m={m.nom}>{p.label}</a>)}</div>
+      </div>
+    )}
+  </div>
+</section>

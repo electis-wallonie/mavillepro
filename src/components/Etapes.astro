@@ -1,0 +1,18 @@
+---
+type Props = { titre?: string; artisan?: string };
+const { titre = 'Comment ça marche ?', artisan = 'artisan' } = Astro.props;
+const e = [
+  ['Décrivez votre projet', "Choisissez le type d'ouvrage et laissez vos coordonnées. Cela prend moins d'une minute."],
+  ['Soyez rappelé sous 24 h', `Un ${artisan} de votre secteur vous appelle pour comprendre votre besoin et convenir d'un rendez-vous.`],
+  ['Recevez votre devis', 'Après la prise de mesures, vous recevez un devis écrit et gratuit. Vous êtes libre de l’accepter ou non.'],
+  ['Les travaux sont réalisés', "L'artisan fabrique, pose et facture directement les travaux, avec ses garanties."],
+];
+---
+<section class="sec">
+  <div class="wrap">
+    <div class="head"><h2>{titre}</h2><span class="bar"></span></div>
+    <div class="grid">
+      {e.map(([t, d], i) => <div class="card etape"><span class="n">{i + 1}</span><strong>{t}</strong><p class="mu">{d}</p></div>)}
+    </div>
+  </div>
+</section>

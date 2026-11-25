@@ -1,0 +1,12 @@
+---
+import Base from '../layouts/Base.astro';
+import { LISTE_METIERS } from '../data/metiers';
+import { u } from '../lib/site';
+---
+<Base title="Page introuvable | MaVillePro" description="Cette page n'existe pas." noindex>
+  <section class="sec"><div class="wrap"><div class="head">
+    <h1 style="color:#0034B8;font-size:36px">Page introuvable</h1><span class="bar"></span>
+    <p>Cette page n'existe pas ou a été déplacée.</p>
+    <div class="chips"><a href={u('/devis/')}>Demander un devis</a>{LISTE_METIERS.map((m) => <a href={u(`/${m.slug}/`)}>{m.nom}</a>)}</div>
+  </div></div></section>
+</Base>

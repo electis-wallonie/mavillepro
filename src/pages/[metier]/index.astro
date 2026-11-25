@@ -1,0 +1,49 @@
+---
+import Base from '../../layouts/Base.astro';
+import Hero from '../../components/Hero.astro';
+import DevisForm from '../../components/DevisForm.astro';
+import Ouvrages from '../../components/Ouvrages.astro';
+import Etapes from '../../components/Etapes.astro';
+import Faq from '../../components/Faq.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { METIERS, type Metier } from '../../data/metiers';
+import { ZONES, pageCommune } from '../../data/communes';
+import { faqLd, crumbLd, serviceLd } from '../../lib/seo';
+import { BRAND, u } from '../../lib/site';
+
+export function getStaticPaths() {
+  return Object.values(METIERS).map((m) => ({ params: { metier: m.slug }, props: { m } }));
+}
+const { m } = Astro.props as { m: Metier };
+const crumb: [string, string][] = [['Accueil', '/'], [m.nom, `/${m.slug}/`]];
+const faq: [string, string][] = [
+  ...m.faq,
+  ['La demande de devis est-elle gratuite ?', 'Oui, la demande et le devis sont gratuits et sans engagement.'],
+  ['Qui réalise les travaux ?', `Un artisan ${m.artisan} indépendant de votre secteur. ${BRAND} assure la mise en relation ; l'artisan établit le devis et réalise les travaux.`],
+];
+const title = `${m.nom} : devis gratuit, réponse sous 24 h | ${BRAND}`;
+const description = `${m.accroche} Un artisan ${m.artisan} de votre secteur vous rappelle sous 24 h. Région orléanaise et région de Charleroi.`;
+const site = Astro.site!;
+---
+<Base title={title} description={description} actif={m.slug}
+  jsonld={[crumbLd(site, crumb, u), serviceLd({ nom: m.nom, description, zone: [...ZONES.FR.villes, ...ZONES.BE.villes], url: new URL(u(`/${m.slug}/`), site).href }), faqLd(faq)]}>
+  <Hero h1={m.h1} intro={m.intro} crumb={crumb}>
+    <DevisForm tuiles={m.tuiles.map((slug) => ({ metier: m, slug }))} metiers={[m]} artisan={m.artisan} />
+  </Hero>
+  <Ouvrages metier={m} />
+  <Etapes titre={`Comment se déroule votre projet de ${m.nom.toLowerCase()} ?`} artisan={m.artisan} />
+  <section class="sec alt" id="zones">
+    <div class="wrap">
+      <div class="head"><h2>Trouvez votre {m.artisan} près de chez vous</h2><span class="bar"></span></div>
+      <div class="grid">
+        {Object.values(ZONES).map((z) => (
+          <div class="card zone"><h3>{z.nom}</h3><p class="mu">{z.sous}</p>
+            <ul>{z.villes.map((v) => { const h = pageCommune(m.slug, v); return <li>{h ? <a href={u(h)}>{m.nom} à {v}</a> : v}</li>; })}</ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+  <Faq titre={`Questions fréquentes sur la ${m.nom.toLowerCase()}`} items={faq} />
+  <CtaBand titre={`Un projet de ${m.nom.toLowerCase()} ?`} texte={`Décrivez-le en une minute : un ${m.artisan} vous rappelle sous 24 h.`} />
+</Base>

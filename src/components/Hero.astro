@@ -1,0 +1,32 @@
+---
+import Check from './Check.astro';
+import { DELAI, u } from '../lib/site';
+type Props = { h1: string; intro: string; crumb?: [string, string][] };
+const { h1, intro, crumb } = Astro.props;
+---
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-l hero-a">
+      {crumb && (
+        <nav class="crumb" aria-label="Fil d'Ariane"><ol>
+          {crumb.map(([t, h], i) => <li>{i < crumb.length - 1 ? <a href={u(h)}>{t}</a> : <span aria-current="page">{t}</span>}</li>)}
+        </ol></nav>
+      )}
+      <span class="badge">{DELAI.toUpperCase()}</span>
+      <h1>{h1}</h1>
+    </div>
+    <div class="hero-f"><slot /></div>
+    <div class="hero-l hero-b">
+      <p>{intro}</p>
+      <ul class="proms">
+        <li><Check />Devis gratuit</li><li><Check />Sans engagement</li><li><Check />Artisans locaux</li>
+      </ul>
+      <span class="kick">QUE SE PASSE-T-IL ENSUITE ?</span>
+      <ol class="steps">
+        <li><span class="n">1</span><span><strong>Vous décrivez votre projet</strong> en moins d'une minute.</span></li>
+        <li><span class="n">2</span><span><strong>Un artisan vous rappelle sous 24 h</strong> pour en parler et fixer un rendez-vous.</span></li>
+        <li><span class="n">3</span><span><strong>Vous recevez un devis écrit et gratuit</strong>, sans engagement.</span></li>
+      </ol>
+    </div>
+  </div>
+</section>

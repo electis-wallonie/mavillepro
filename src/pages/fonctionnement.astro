@@ -1,0 +1,25 @@
+---
+import Base from '../layouts/Base.astro';
+import Etapes from '../components/Etapes.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { BRAND } from '../lib/site';
+---
+<Base title={`Comment ça marche ? | ${BRAND}`} description={`${BRAND} met en relation les particuliers avec des artisans indépendants en métallerie, menuiserie et vitrerie. Fonctionnement, sélection des artisans et gestion des avis.`} actif="fonctionnement">
+  <section class="sec"><div class="wrap"><div class="prose">
+    <h1 style="color:#0034B8;font-size:clamp(30px,4vw,42px)">Comment fonctionne {BRAND} ?</h1>
+    <p>{BRAND} est une plateforme de mise en relation. Nous ne réalisons pas les travaux nous-mêmes : nous transmettons votre demande de devis à un artisan indépendant qui intervient dans votre secteur.</p>
+    <h2>Ce que nous faisons</h2>
+    <p>Vous décrivez votre projet dans le formulaire. Nous transmettons votre demande à un artisan partenaire disponible près de chez vous, qui vous rappelle sous 24 h.</p>
+    <h2>Qui réalise les travaux ?</h2>
+    <p>L'artisan est une entreprise indépendante. Il établit le devis, réalise les travaux, les facture directement et reste responsable de ses garanties et assurances.</p>
+    <h2>Comment sont choisis les artisans ?</h2>
+    <p>[À compléter : critères de sélection — immatriculation, assurances, expérience, zone d'intervention.]</p>
+    <h2>Relation avec les artisans</h2>
+    <p>[À compléter : nature de la relation contractuelle et, le cas échéant, rémunération perçue par {BRAND} auprès des artisans, conformément à l'article L111-7 du Code de la consommation.]</p>
+    <h2>Les avis clients</h2>
+    <p>[À compléter : comment les avis sont collectés et vérifiés, conformément à l'article L111-7-2 du Code de la consommation.]</p>
+  </div></div></section>
+  <Etapes />
+  <CtaBand titre="Prêt à lancer votre projet ?" texte="Décrivez-le en une minute : un artisan vous rappelle sous 24 h." />
+  <div id="devis"></div>
+</Base>

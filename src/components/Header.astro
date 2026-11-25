@@ -1,0 +1,36 @@
+---
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import { CTA_COURT, u } from '../lib/site';
+type Props = { actif?: string };
+const { actif } = Astro.props;
+const liens = [
+  ['metallerie', 'Métallerie', '/metallerie/'],
+  ['menuiserie', 'Menuiserie', '/menuiserie/'],
+  ['vitrerie', 'Vitrerie', '/vitrerie/'],
+  ['fonctionnement', 'Comment ça marche', '/fonctionnement/'],
+];
+---
+<div class="topbar"><div class="wrap">
+  <span><b>✓</b> Devis gratuit et sans engagement</span>
+  <span><b>✓</b> Réponse sous 24 h</span>
+  <span><b>✓</b> Région orléanaise · Charleroi, Mons, La Louvière, Waterloo</span>
+</div></div>
+<header class="hdr">
+  <div class="wrap">
+    <Logo />
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav" aria-label="Ouvrir le menu"><Icon name="menu" /></button>
+    <nav class="nav" id="nav" aria-label="Navigation principale">
+      {liens.map(([k, t, h]) => <a href={u(h)} aria-current={actif === k ? 'page' : undefined}>{t}</a>)}
+    </nav>
+    <a class="btn btn-o" href="#devis">{CTA_COURT}</a>
+  </div>
+</header>
+<script>
+  const b = document.querySelector('.menu-btn');
+  const n = document.getElementById('nav');
+  b?.addEventListener('click', () => {
+    const o = n!.classList.toggle('open');
+    b.setAttribute('aria-expanded', String(o));
+  });
+</script>

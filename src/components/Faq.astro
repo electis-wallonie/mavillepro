@@ -1,0 +1,12 @@
+---
+type Props = { titre: string; items: [string, string][]; alt?: boolean };
+const { titre, items, alt = false } = Astro.props;
+---
+<section class={`sec${alt ? ' alt' : ''}`} id="faq">
+  <div class="wrap">
+    <div class="head"><h2>{titre}</h2><span class="bar"></span></div>
+    <div class="faq">
+      {items.map(([q, r]) => <details><summary>{q}</summary><p>{r}</p></details>)}
+    </div>
+  </div>
+</section>

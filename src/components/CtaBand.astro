@@ -1,0 +1,10 @@
+---
+import { CTA } from '../lib/site';
+type Props = { titre: string; texte: string };
+const { titre, texte } = Astro.props;
+---
+<section class="sec blue">
+  <div class="wrap">
+    <div class="head"><h2>{titre}</h2><p>{texte}</p><a class="btn btn-o" href="#devis">{CTA}</a></div>
+  </div>
+</section>
