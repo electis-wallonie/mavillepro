@@ -4,6 +4,7 @@ import { join } from 'node:path';
 const files = [];
 const walk = (d) => readdirSync(d).forEach((f) => { const p = join(d, f); statSync(p).isDirectory() ? walk(p) : p.endsWith('.html') && files.push(p); });
 walk('dist');
+files.splice(files.indexOf(join('dist', 'index.html')), 1); // racine = simple redirection
 const errs = [], titles = new Map(), descs = new Map();
 const tel = /(tel:|(?:\+33|\+32|\b0)[1-9](?:[\s.-]?\d{2}){4}\b)/;
 for (const f of files) {

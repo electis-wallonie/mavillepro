@@ -20,7 +20,7 @@ const org = { '@context': 'https://schema.org', '@type': 'Organization', name: B
   <meta name="description" content={description} />
   <link rel="canonical" href={canonical} />
   {alternates && Object.entries(alternates).map(([p, h]) => <link rel="alternate" hreflang={PAYS[p as P].locale} href={abs(h!)} />)}
-  {alternates && <link rel="alternate" hreflang="x-default" href={abs('/')} />}
+  {alternates?.fr && <link rel="alternate" hreflang="x-default" href={abs(alternates.fr)} />}
   {(PREVIEW || noindex) && <meta name="robots" content="noindex, nofollow" />}
   <meta name="theme-color" content="#0034B8" />
   <meta property="og:type" content="website" />

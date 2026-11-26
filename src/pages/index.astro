@@ -1,25 +1,24 @@
 ---
-// Page d'entrée : choix du pays (France ou Belgique)
-import Base from '../layouts/Base.astro';
+// Racine : renvoie directement vers /fr/ ou /be/, sans page de choix.
+// Visiteur en Belgique (fuseau horaire ou langue du navigateur) -> /be/, sinon -> /fr/.
 import { u } from '../lib/site';
+const fr = u('/fr/');
+const be = u('/be/');
 ---
-<Base title="MaVillePro : votre artisan en France ou en Belgique" description="Métallerie, menuiserie et vitrerie : choisissez votre pays pour demander un devis gratuit, rappel sous 24 h. Région orléanaise et Wallonie." alternates={{ fr: '/fr/', be: '/be/' }}>
-  <section class="sec">
-    <div class="wrap">
-      <div class="head"><h1 style="color:#0034B8;font-size:clamp(30px,4vw,42px)">Trouvez votre artisan près de chez vous</h1><span class="bar"></span><p>Choisissez votre pays pour voir les artisans de votre région.</p></div>
-      <div class="choix">
-        <a class="card" href={u('/fr/')} data-pays="fr" hreflang="fr-FR"><strong>France</strong><span class="mu">Région orléanaise : Orléans et 50 km autour (Loiret, Loir-et-Cher, Eure-et-Loir)</span><span class="link">Accéder au site France →</span></a>
-        <a class="card" href={u('/be/')} data-pays="be" hreflang="fr-BE"><strong>Belgique</strong><span class="mu">Wallonie : Charleroi, La Louvière, Mons, Nivelles, Waterloo, Namur</span><span class="link">Accéder au site Belgique →</span></a>
-      </div>
-    </div>
-  </section>
-  <script>
-    // Met en avant le pays probable du visiteur, sans redirection forcée
-    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
-    const langs = (navigator.languages || [navigator.language]).join(',');
-    const be = tz === 'Europe/Brussels' || /-BE\b/i.test(langs);
-    const fr = tz === 'Europe/Paris' || /-FR\b/i.test(langs);
-    const p = be ? 'be' : fr ? 'fr' : '';
-    if (p) document.querySelector(`[data-pays="${p}"]`)?.classList.add('suggere');
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <title>MaVillePro</title>
+  <meta name="robots" content="noindex, follow" />
+  <link rel="canonical" href={new URL(fr, Astro.site).href} />
+  <script is:inline define:vars={{ fr, be }}>
+    var tz = '';
+    try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) {}
+    var langs = (navigator.languages || [navigator.language || '']).join(',');
+    location.replace(tz === 'Europe/Brussels' || /-BE\b/i.test(langs) ? be : fr);
   </script>
-</Base>
+  <meta http-equiv="refresh" content={`0;url=${fr}`} />
+</head>
+<body><p><a href={fr}>MaVillePro France</a> · <a href={be}>MaVillePro Belgique</a></p></body>
+</html>

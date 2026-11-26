@@ -5,6 +5,7 @@ const base = process.env.BASE ?? '/mavillepro';
 const files = [];
 const walk = (d) => readdirSync(d).forEach((f) => { const p = join(d, f); statSync(p).isDirectory() ? walk(p) : p.endsWith('.html') && files.push(p); });
 walk('dist');
+files.splice(files.indexOf(join('dist', 'index.html')), 1); // racine = simple redirection
 const pb = {}; const add = (k, v) => (pb[k] ??= []).push(v);
 const resout = (href) => {
   let p = href.split('#')[0].split('?')[0]; if (!p) return true;
