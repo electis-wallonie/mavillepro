@@ -7,7 +7,7 @@ import { PAYS, LISTE_P, type P } from '../../lib/pays';
 export function getStaticPaths() { return LISTE_P.map((pays) => ({ params: { pays } })); }
 const pays = Astro.params.pays as P;
 ---
-<Base pays={pays} alternates={{ fr: '/fr/fonctionnement/', be: '/be/fonctionnement/' }} title={`Comment ça marche ? ${BRAND} ${PAYS[pays].nom}`} description={`${BRAND} met en relation les particuliers avec des artisans indépendants en métallerie, menuiserie et vitrerie. Fonctionnement et gestion des avis (${PAYS[pays].nom}).`} actif="fonctionnement">
+<Base pays={pays} alternates={{ fr: '/fr/fonctionnement/', be: '/be/fonctionnement/' }} title={`Comment ça marche ? ${BRAND} ${PAYS[pays].nom}`} description={`${BRAND} : comment nous sélectionnons les artisans en métallerie, menuiserie et vitrerie, attribuons votre demande et sommes rémunérés (${PAYS[pays].nom}).`} actif="fonctionnement">
   <section class="sec"><div class="wrap"><div class="prose">
     <h1 style="color:#0034B8;font-size:clamp(30px,4vw,42px)">Comment fonctionne {BRAND} ?</h1>
     <p>{BRAND} est une plateforme de mise en relation. Nous ne réalisons pas les travaux nous-mêmes : nous transmettons votre demande de devis à un artisan indépendant qui intervient dans votre secteur.</p>
@@ -16,11 +16,20 @@ const pays = Astro.params.pays as P;
     <h2>Qui réalise les travaux ?</h2>
     <p>L'artisan est une entreprise indépendante. Il établit le devis, réalise les travaux, les facture directement et reste responsable de ses garanties et assurances.</p>
     <h2>Comment sont choisis les artisans ?</h2>
-    <p>[À compléter : critères de sélection — immatriculation, assurances, expérience, zone d'intervention.]</p>
-    <h2>Relation avec les artisans</h2>
-    <p>[À compléter : nature de la relation contractuelle et, le cas échéant, rémunération perçue par {BRAND} auprès des artisans{pays === 'fr' ? ", conformément à l'article L111-7 du Code de la consommation" : ', conformément au Code de droit économique belge'}.]</p>
+    <p>La sélection est volontairement stricte. Avant de transmettre la moindre demande à un artisan, nous vérifions :</p>
+    <ul>
+      <li>son immatriculation et son numéro de TVA ({pays === 'fr' ? 'SIRET, inscription au registre' : "numéro d'entreprise BCE"}) ;</li>
+      <li>son {pays === 'fr' ? 'assurance décennale' : 'assurance responsabilité professionnelle et, pour les travaux concernés, décennale'}, attestation à l'appui ;</li>
+      <li>son ancienneté dans le métier ;</li>
+      <li>ses avis clients publics et leur nombre.</li>
+    </ul>
+    <p>Nous échangeons aussi avec chaque artisan par téléphone avant tout partenariat. Un artisan qui ne respecte pas nos exigences (rappel rapide, sérieux, qualité du travail) n'est plus sollicité.</p>
+    <h2>Comment votre demande est attribuée</h2>
+    <p>Votre demande est transmise à un seul artisan, choisi selon le type de travaux, la proximité avec votre commune et sa disponibilité. Vos coordonnées ne sont pas diffusées à plusieurs entreprises.</p>
+    <h2>Comment {BRAND} est rémunéré</h2>
+    <p>Le service est gratuit et sans engagement pour vous. {BRAND} est rémunéré par l'artisan, sous forme de commission, uniquement lorsqu'un chantier est réalisé suite à la mise en relation. Vous ne payez rien à {BRAND}. Le devis est établi librement par l'artisan, et vous restez libre de l'accepter ou non{pays === 'fr' ? " (information donnée conformément à l'article L111-7 du Code de la consommation)" : ''}.</p>
     <h2>Les avis clients</h2>
-    <p>[À compléter : comment les avis sont collectés et vérifiés{pays === 'fr' ? ", conformément à l'article L111-7-2 du Code de la consommation" : ''}.]</p>
+    <p>{BRAND} n'affiche pas d'avis clients sur son site. Les avis que nous consultons pour sélectionner les artisans sont leurs avis publics (fiches Google notamment).</p>
   </div></div></section>
   <Etapes />
   <CtaBand titre="Prêt à lancer votre projet ?" texte="Décrivez-le en une minute : un artisan vous rappelle sous 24 h." />
