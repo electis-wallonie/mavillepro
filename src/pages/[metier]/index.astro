@@ -23,7 +23,7 @@ const faq: [string, string][] = [
   ['Qui réalise les travaux ?', `Un artisan ${m.artisan} indépendant de votre secteur. ${BRAND} assure la mise en relation ; l'artisan établit le devis et réalise les travaux.`],
 ];
 const title = `${m.nom} : devis gratuit, réponse sous 24 h | ${BRAND}`;
-const description = `${m.accroche} Un artisan ${m.artisan} de votre secteur vous rappelle sous 24 h. Région orléanaise et région de Charleroi.`;
+const description = [`${m.accroche} Rappel sous 24 h, devis gratuit. Région orléanaise et Wallonie.`, `${m.accroche} Rappel sous 24 h, devis gratuit.`].find((d) => d.length <= 158)!;
 const site = Astro.site!;
 ---
 <Base title={title} description={description} actif={m.slug}

@@ -27,8 +27,8 @@ const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 // ----- Page département / province -----
 const rc = r ? PUBLIEES.filter((x) => x.regionSlug === r.slug).sort((x, y) => x.nom.localeCompare(y.nom, 'fr')) : [];
-const rTitre = r ? `${cap(m.artisan)} dans ${r.art} : devis gratuit sous 24 h | ${BRAND}` : '';
-const rDesc = r ? `${m.accroche} ${cap(m.artisan)} dans ${r.art} : ${rc.length} communes desservies, rappel sous 24 h et devis gratuit.` : '';
+const rTitre = r ? [`${cap(m.artisan)} dans ${r.art} : devis gratuit sous 24 h`, `${cap(m.artisan)} dans ${r.art} : devis gratuit`].find((t) => t.length <= 62) ?? `${cap(m.artisan)} dans ${r.art}` : '';
+const rDesc = r ? [`${cap(m.artisan)} dans ${r.art} : ${rc.length} communes desservies. ${r.pays === 'BE' ? FOCUS[m.slug].be : FOCUS[m.slug].fr}. Rappel sous 24 h, devis gratuit.`, `${cap(m.artisan)} dans ${r.art} : ${rc.length} communes desservies. Rappel sous 24 h, devis gratuit et sans engagement.`].find((d) => d.length <= 158)! : '';
 
 // ----- Page commune -----
 const p = c ? pageCommune(c, m) : null;

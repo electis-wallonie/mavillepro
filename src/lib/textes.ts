@@ -76,10 +76,10 @@ function regles(c: Commune, m: MS): string {
 // ---------- Assemblage ----------
 const PROV_ART: Record<string, string> = { Hainaut: 'le Hainaut', Namur: 'la province de Namur', 'Brabant wallon': 'le Brabant wallon' };
 const DEP_DE: Record<string, string> = { Loiret: 'du Loiret', 'Loir-et-Cher': 'de Loir-et-Cher', 'Eure-et-Loir': "d'Eure-et-Loir", Cher: 'du Cher', Essonne: "de l'Essonne" };
-export const FOCUS: Record<MS, { fr: string; be: string; titre: string; titreBe: string }> = {
-  metallerie: { fr: 'portails, portes de garage et pergolas sur mesure', be: 'portails, portes de garage et pergolas sur mesure', titre: 'portail, porte de garage, pergola', titreBe: 'portail, porte de garage, pergola' },
-  menuiserie: { fr: 'fenêtres, volets roulants et portes de garage', be: 'châssis, volets et portes de garage', titre: 'fenêtres, volets, porte de garage', titreBe: 'châssis, volets, porte de garage' },
-  vitrerie: { fr: 'double vitrage, vitre cassée et parois de douche', be: 'double vitrage, vitre cassée et parois de douche', titre: 'double vitrage, vitre cassée', titreBe: 'double vitrage, vitre cassée' },
+export const FOCUS: Record<MS, { fr: string; be: string; titre: string; titreBe: string; court: string; courtBe: string }> = {
+  metallerie: { fr: 'portails, portes de garage et pergolas sur mesure', be: 'portails, portes de garage et pergolas sur mesure', titre: 'portail, porte de garage, pergola', titreBe: 'portail, porte de garage, pergola', court: 'portail, pergola', courtBe: 'portail, pergola' },
+  menuiserie: { fr: 'fenêtres, volets roulants et portes de garage', be: 'châssis, volets et portes de garage', titre: 'fenêtres, volets, porte de garage', titreBe: 'châssis, volets, porte de garage', court: 'fenêtres, volets', courtBe: 'châssis, volets' },
+  vitrerie: { fr: 'double vitrage, vitre cassée et parois de douche', be: 'double vitrage, vitre cassée et parois de douche', titre: 'double vitrage, vitre cassée', titreBe: 'double vitrage, vitre cassée', court: 'double vitrage', courtBe: 'double vitrage' },
 };
 
 export type PageCommune = {
@@ -98,8 +98,15 @@ export function pageCommune(c: Commune, m: Metier): PageCommune {
   const v3 = c.voisines.slice(0, 3).map((v) => v.nom);
   const surPole = c.km <= 1 && c.nom === c.pole;
 
-  const title = `${art} ${a(c.nom)} (${c.cp}) : ${be ? f.titreBe : f.titre} – Devis gratuit`;
-  const description = `${art} ${a(c.nom)} et alentour (${v3.slice(0, 2).join(', ')}) : ${be ? f.be : f.fr}. Un artisan vous rappelle sous 24 h, devis gratuit et sans engagement.`;
+  // Title : la variante la plus complète qui tient en 62 caractères (au-delà, Google coupe)
+  const debut = `${art} ${a(c.nom)} (${c.cp})`;
+  const title = [`${debut} : ${be ? f.titreBe : f.titre} – Devis gratuit`, `${debut} : ${be ? f.courtBe : f.court} – Devis gratuit`, `${debut} – Devis gratuit sous 24 h`, `${debut} – Devis gratuit`, debut]
+    .find((t) => t.length <= 62) ?? debut;
+  const description = [
+    `${art} ${a(c.nom)} et alentour (${v3.slice(0, 2).join(', ')}) : ${be ? f.be : f.fr}. Rappel sous 24 h, devis gratuit et sans engagement.`,
+    `${art} ${a(c.nom)} (${c.cp}) : ${be ? f.be : f.fr}. Rappel sous 24 h, devis gratuit et sans engagement.`,
+    `${art} ${a(c.nom)} (${c.cp}) : ${be ? f.be : f.fr}. Rappel sous 24 h, devis gratuit.`,
+  ].find((d) => d.length <= 158) ?? `${art} ${a(c.nom)} (${c.cp}). Rappel sous 24 h, devis gratuit.`;
   const h1 = `${art} ${a(c.nom)} (${c.cp}) : ${be ? f.be : f.fr}`;
   const intro = `Décrivez votre projet ${a(c.nom)} : un artisan ${m.artisan} qui intervient ${c.proche ? `dans le secteur ${de(c.proche.nom)}` : c.km <= 15 && !surPole && c.nom !== 'Orléans' ? `dans le secteur ${de(c.pole)}` : `${a(c.nom)} et alentour`} vous rappelle sous 24 h pour fixer un rendez-vous et vous remettre un devis gratuit.`;
 
@@ -110,7 +117,7 @@ export function pageCommune(c: Commune, m: Metier): PageCommune {
       : `${c.nom} (${c.cp}) se trouve dans ${PROV_ART[c.region]}, à ${c.km} km ${c.dir} de ${c.pole}.`;
   } else {
     const hab = c.pop ? ` de ${nf(c.pop)} habitants` : '';
-    const ep = c.epci ? ` Elle fait partie de ${c.epci.startsWith('CC') ? 'la communauté de communes ' + c.epci.slice(3) : c.epci.startsWith('CA') ? "la communauté d'agglomération " + c.epci.slice(3) : c.epci}.` : '';
+    const ep = c.epci ? ` Elle fait partie ${c.epci.startsWith('CC') ? 'de la communauté de communes ' + c.epci.slice(3) : c.epci.startsWith('CA') ? "de la communauté d'agglomération " + c.epci.slice(3) : de(c.epci)}.` : '';
     situation = c.nom === 'Orléans'
       ? `Orléans, préfecture du Loiret, compte ${nf(c.pop!)} habitants.${ep}`
       : `${c.nom} (${c.cp}) est une commune ${DEP_DE[c.region] ?? 'du ' + c.region}${hab}, située à ${c.km} km ${c.dir} d'Orléans${c.proche ? ` et à ${c.proche.km} km ${de(c.proche.nom)}` : ''}.${ep}`;
