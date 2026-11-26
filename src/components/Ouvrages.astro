@@ -21,15 +21,15 @@ const autres = m.prestations.filter((p) => !montres.has(p.slug));
           <h3>{ville(g.titre, nom)}</h3>
           <p class="mu">{g.texte}</p>
           {complements[g.key] && <p class="mu">{complements[g.key]}</p>}
-          <div><a class="btn btn-o" href="#devis" data-preset={label(m, g.items[0])} data-m={m.nom}>{g.cta}</a></div>
+          <div><a class="btn btn-o" href="#devis" data-preset={label(m, g.items[0], 'TOUS', true)} data-m={m.nom}>{g.cta}</a></div>
         </div>
         <div class="ims">
           {g.items.map((s) => {
             const im = photo(m.slug, s);
             return (
               <div class="pc">
-                <div class="v">{im ? <Image src={im} alt={`${label(m, s)} sur mesure${nom ? ' à ' + nom : ''}`} width={300} loading="lazy" /> : <Icon name={m.icone} size={56} color="#0034B8" stroke={1.5} />}</div>
-                <span>{label(m, s)}</span>
+                <div class="v">{im ? <Image src={im} alt={`${label(m, s, 'TOUS')} sur mesure${nom ? ' à ' + nom : ''}`} width={300} loading="lazy" /> : <Icon name={m.icone} size={56} color="#0034B8" stroke={1.5} />}</div>
+                <span>{label(m, s, 'TOUS')}</span>
               </div>
             );
           })}
@@ -39,7 +39,7 @@ const autres = m.prestations.filter((p) => !montres.has(p.slug));
     {autres.length > 0 && (
       <div style="display:flex;flex-direction:column;align-items:center;gap:12px">
         <h3 style="font-size:18px">Autres travaux de {m.nom.toLowerCase()}{nom ? ` à ${nom}` : ''}</h3>
-        <div class="chips">{autres.map((p) => <a href="#devis" data-preset="Autre projet" data-m={m.nom}>{p.label}</a>)}</div>
+        <div class="chips">{autres.map((p) => <a href="#devis" data-preset="Autre projet" data-m={m.nom}>{label(m, p.slug, 'TOUS')}</a>)}</div>
       </div>
     )}
   </div>

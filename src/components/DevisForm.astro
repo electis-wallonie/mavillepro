@@ -3,12 +3,12 @@ import { Image } from 'astro:assets';
 import Icon from './Icon.astro';
 import Check from './Check.astro';
 import { photo } from '../lib/images';
-import { label, type Metier } from '../data/metiers';
+import { label, type Metier, type Lieu } from '../data/metiers';
 import { CTA, u } from '../lib/site';
 
 type Tuile = { metier: Metier; slug: string };
-type Props = { id?: string; tuiles: Tuile[]; metiers: Metier[]; commune?: string; cp?: string; artisan?: string };
-const { id = 'devis', tuiles, metiers, commune = '', cp = '', artisan = 'artisan' } = Astro.props;
+type Props = { id?: string; tuiles: Tuile[]; metiers: Metier[]; commune?: string; cp?: string; artisan?: string; lieu?: Lieu };
+const { id = 'devis', tuiles, metiers, commune = '', cp = '', artisan = 'artisan', lieu = 'TOUS' } = Astro.props;
 const endpoint = import.meta.env.PUBLIC_FORM_ENDPOINT ?? '';
 const de = (n: string) => (/^[AEIOUYÉÈÊÀÂÎÔ]/i.test(n) ? `d'${n}` : `de ${n}`);
 const merci = commune ? `Un ${artisan} ${de(commune)} ou des environs vous rappelle sous 24 h.` : `Un ${artisan} de votre secteur vous rappelle sous 24 h.`;
@@ -23,7 +23,7 @@ const merci = commune ? `Un ${artisan} ${de(commune)} ou des environs vous rappe
     <div class="tiles">
       {tuiles.map(({ metier, slug }) => {
         const im = photo(metier.slug, slug);
-        const lab = slug === 'autre' ? 'Autre projet' : label(metier, slug);
+        const lab = label(metier, slug, lieu, true);
         return (
           <button type="button" class={`tile${slug === 'autre' ? ' autre' : ''}`} data-o={lab} data-m={metier.nom}>
             <span class="v">
@@ -44,7 +44,7 @@ const merci = commune ? `Un ${artisan} ${de(commune)} ou des environs vous rappe
       <select name="ouvrage_detail">
         <option value="">Choisissez dans la liste</option>
         {metiers.map((m) => (
-          <optgroup label={m.nom}>{m.prestations.map((p) => <option>{p.label}</option>)}</optgroup>
+          <optgroup label={m.nom}>{m.prestations.map((p) => <option>{label(m, p.slug, lieu)}</option>)}</optgroup>
         ))}
         <option>Autre (je précise dans le message)</option>
       </select>
@@ -52,7 +52,7 @@ const merci = commune ? `Un ${artisan} ${de(commune)} ou des environs vous rappe
     <div class="f2">
       <label>Prénom<input name="prenom" autocomplete="given-name" required /></label>
       <label>Nom<input name="nom" autocomplete="family-name" required /></label>
-      <label>Téléphone<input name="telephone" type="tel" autocomplete="tel" inputmode="tel" required /></label>
+      <label>{lieu === 'BE' ? 'GSM ou téléphone' : 'Téléphone'}<input name="telephone" type="tel" autocomplete="tel" inputmode="tel" required /></label>
       <label>E-mail<input name="email" type="email" autocomplete="email" required /></label>
       <label>Code postal<input name="code_postal" autocomplete="postal-code" inputmode="numeric" maxlength="5" value={cp} placeholder="45000 ou 6000" required /></label>
       <label>Ville<input name="ville" autocomplete="address-level2" value={commune} required /></label>

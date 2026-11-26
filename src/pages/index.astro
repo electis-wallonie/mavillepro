@@ -14,14 +14,15 @@ import { faqLd } from '../lib/seo';
 import { BRAND, CTA, SLOGAN, u } from '../lib/site';
 
 const M = METIERS;
+// Tuiles classées selon la demande (Google Trends, 12 derniers mois, France et Wallonie)
 const tuiles = [
   { metier: M.metallerie, slug: 'portail-battant' },
-  { metier: M.metallerie, slug: 'garde-corps' },
-  { metier: M.metallerie, slug: 'escalier-droit' },
+  { metier: M.menuiserie, slug: 'porte-garage-sectionnelle' },
+  { metier: M.metallerie, slug: 'pergola' },
+  { metier: M.metallerie, slug: 'cloture' },
   { metier: M.menuiserie, slug: 'fenetre' },
-  { metier: M.menuiserie, slug: 'porte-entree' },
   { metier: M.menuiserie, slug: 'volet-roulant' },
-  { metier: M.vitrerie, slug: 'vitre-cassee' },
+  { metier: M.metallerie, slug: 'carport' },
   { metier: M.metallerie, slug: 'autre' },
 ];
 const vitrines: Record<string, string> = { metallerie: 'portail-battant', menuiserie: 'fenetre', vitrerie: '' };
@@ -43,10 +44,10 @@ const avantages = [
 ---
 <Base
   title={`${BRAND} – Métallerie, menuiserie, vitrerie : devis gratuit sous 24 h`}
-  description="Portail, garde-corps, fenêtres, volets, vitre cassée : décrivez votre projet, un artisan de votre secteur vous rappelle sous 24 h. Région orléanaise, Charleroi, Mons, La Louvière."
+  description="Portail, porte de garage, pergola, fenêtres, volets roulants, double vitrage : décrivez votre projet, un artisan de votre secteur vous rappelle sous 24 h. Région orléanaise, Charleroi, Mons, La Louvière."
   jsonld={[faqLd(faq)]}
 >
-  <Hero h1={`${SLOGAN} : métallerie, menuiserie et vitrerie`} intro="Portail, garde-corps, fenêtres, volets ou vitre cassée : décrivez votre projet en une minute. Un artisan de votre secteur vous rappelle sous 24 h pour un devis gratuit.">
+  <Hero h1={`${SLOGAN} : métallerie, menuiserie et vitrerie`} intro="Portail, porte de garage, pergola, fenêtres ou volets roulants : décrivez votre projet en une minute. Un artisan de votre secteur vous rappelle sous 24 h pour un devis gratuit.">
     <DevisForm tuiles={tuiles} metiers={LISTE_METIERS} />
   </Hero>
 

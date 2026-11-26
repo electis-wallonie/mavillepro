@@ -46,7 +46,7 @@ const autres = LISTE_METIERS.filter((x) => x.slug !== m.slug);
   <Base title={p.title} description={p.description} actif={m.slug}
     jsonld={[crumbLd(site, crumb, u), serviceLd({ nom: `${m.nom} ${a(c.nom)}`, description: p.description, zone: [c.nom, ...c.voisines.slice(0, 5).map((v) => v.nom)], url }), faqLd(faq)]}>
     <Hero h1={p.h1} intro={p.intro} crumb={crumb}>
-      <DevisForm tuiles={tuiles} metiers={[m]} commune={c.nom} cp={c.cp} artisan={m.artisan} />
+      <DevisForm tuiles={tuiles} metiers={[m]} commune={c.nom} cp={c.cp} artisan={m.artisan} lieu={c.pays} />
     </Hero>
 
     <section class="sec">
@@ -70,7 +70,7 @@ const autres = LISTE_METIERS.filter((x) => x.slug !== m.slug);
       </div>
     </section>
 
-    <OuvragesCompact sansAutres metier={m} top={p.top} lieu={a(c.nom)} titre={`Les travaux de ${m.nom.toLowerCase()} les plus demandés ${a(c.nom)}`} texte={`Choisissez un ouvrage : il sera présélectionné dans le formulaire. Un ${m.artisan} vous rappelle sous 24 h.`} />
+    <OuvragesCompact sansAutres pays={c.pays} metier={m} top={p.top} lieu={a(c.nom)} titre={`Les travaux de ${m.nom.toLowerCase()} les plus demandés ${a(c.nom)}`} texte={`Choisissez un ouvrage : il sera présélectionné dans le formulaire. Un ${m.artisan} vous rappelle sous 24 h.`} />
 
     <section class="sec alt" id="zone">
       <div class="wrap">
@@ -94,7 +94,7 @@ const autres = LISTE_METIERS.filter((x) => x.slug !== m.slug);
 ) : (
   <Base title={rTitre} description={rDesc} actif={m.slug} jsonld={[crumbLd(site, crumb, u), faqLd(faq)]}>
     <Hero h1={`${cap(m.artisan)} dans ${r!.art} : ${r!.pays === 'BE' ? FOCUS[m.slug].be : FOCUS[m.slug].fr}`} intro={`Décrivez votre projet : un artisan ${m.artisan} qui intervient dans ${r!.art} vous rappelle sous 24 h pour un devis gratuit.`} crumb={crumb}>
-      <DevisForm tuiles={tuiles} metiers={[m]} artisan={m.artisan} />
+      <DevisForm tuiles={tuiles} metiers={[m]} artisan={m.artisan} lieu={r!.pays} />
     </Hero>
     <section class="sec" id="communes">
       <div class="wrap">
@@ -104,7 +104,7 @@ const autres = LISTE_METIERS.filter((x) => x.slug !== m.slug);
         </ul>
       </div>
     </section>
-    <OuvragesCompact metier={m} top={m.tuiles.filter((s) => s !== 'autre')} titre={`Nos prestations en ${m.nom.toLowerCase()} dans ${r!.art}`} texte="Choisissez un ouvrage : il sera présélectionné dans le formulaire." />
+    <OuvragesCompact pays={r!.pays} metier={m} top={m.tuiles.filter((s) => s !== 'autre')} titre={`Nos prestations en ${m.nom.toLowerCase()} dans ${r!.art}`} texte="Choisissez un ouvrage : il sera présélectionné dans le formulaire." />
     <Etapes artisan={m.artisan} />
     <Faq titre={`Questions fréquentes sur la ${m.nom.toLowerCase()}`} items={faq} />
   </Base>
