@@ -1,10 +1,13 @@
 ---
-import Base from '../layouts/Base.astro';
-import Etapes from '../components/Etapes.astro';
-import CtaBand from '../components/CtaBand.astro';
-import { BRAND } from '../lib/site';
+import Base from '../../layouts/Base.astro';
+import Etapes from '../../components/Etapes.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { BRAND } from '../../lib/site';
+import { PAYS, LISTE_P, type P } from '../../lib/pays';
+export function getStaticPaths() { return LISTE_P.map((pays) => ({ params: { pays } })); }
+const pays = Astro.params.pays as P;
 ---
-<Base title={`Comment ça marche ? | ${BRAND}`} description={`${BRAND} met en relation les particuliers avec des artisans indépendants en métallerie, menuiserie et vitrerie. Fonctionnement et gestion des avis.`} actif="fonctionnement">
+<Base pays={pays} alternates={{ fr: '/fr/fonctionnement/', be: '/be/fonctionnement/' }} title={`Comment ça marche ? ${BRAND} ${PAYS[pays].nom}`} description={`${BRAND} met en relation les particuliers avec des artisans indépendants en métallerie, menuiserie et vitrerie. Fonctionnement et gestion des avis (${PAYS[pays].nom}).`} actif="fonctionnement">
   <section class="sec"><div class="wrap"><div class="prose">
     <h1 style="color:#0034B8;font-size:clamp(30px,4vw,42px)">Comment fonctionne {BRAND} ?</h1>
     <p>{BRAND} est une plateforme de mise en relation. Nous ne réalisons pas les travaux nous-mêmes : nous transmettons votre demande de devis à un artisan indépendant qui intervient dans votre secteur.</p>
@@ -15,9 +18,9 @@ import { BRAND } from '../lib/site';
     <h2>Comment sont choisis les artisans ?</h2>
     <p>[À compléter : critères de sélection — immatriculation, assurances, expérience, zone d'intervention.]</p>
     <h2>Relation avec les artisans</h2>
-    <p>[À compléter : nature de la relation contractuelle et, le cas échéant, rémunération perçue par {BRAND} auprès des artisans, conformément à l'article L111-7 du Code de la consommation.]</p>
+    <p>[À compléter : nature de la relation contractuelle et, le cas échéant, rémunération perçue par {BRAND} auprès des artisans{pays === 'fr' ? ", conformément à l'article L111-7 du Code de la consommation" : ', conformément au Code de droit économique belge'}.]</p>
     <h2>Les avis clients</h2>
-    <p>[À compléter : comment les avis sont collectés et vérifiés, conformément à l'article L111-7-2 du Code de la consommation.]</p>
+    <p>[À compléter : comment les avis sont collectés et vérifiés{pays === 'fr' ? ", conformément à l'article L111-7-2 du Code de la consommation" : ''}.]</p>
   </div></div></section>
   <Etapes />
   <CtaBand titre="Prêt à lancer votre projet ?" texte="Décrivez-le en une minute : un artisan vous rappelle sous 24 h." />

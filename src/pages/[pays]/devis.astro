@@ -1,0 +1,20 @@
+---
+import Base from '../../layouts/Base.astro';
+import Hero from '../../components/Hero.astro';
+import DevisForm from '../../components/DevisForm.astro';
+import { METIERS as M, LISTE_METIERS } from '../../data/metiers';
+import { BRAND } from '../../lib/site';
+import { PAYS, LISTE_P, type P } from '../../lib/pays';
+export function getStaticPaths() { return LISTE_P.map((pays) => ({ params: { pays } })); }
+const pays = Astro.params.pays as P;
+const tuiles = [
+  { metier: M.metallerie, slug: 'portail-battant' }, { metier: M.menuiserie, slug: 'porte-garage-sectionnelle' }, { metier: M.metallerie, slug: 'pergola' },
+  { metier: M.metallerie, slug: 'cloture' }, { metier: M.menuiserie, slug: 'fenetre' }, { metier: M.menuiserie, slug: 'volet-roulant' },
+  { metier: M.metallerie, slug: 'carport' }, { metier: M.metallerie, slug: 'autre' },
+];
+---
+<Base pays={pays} alternates={{ fr: '/fr/devis/', be: '/be/devis/' }} title={`Demande de devis gratuit (${PAYS[pays].nom}) – réponse sous 24 h`} description={`Décrivez votre projet de métallerie, menuiserie ou vitrerie : un artisan de votre secteur vous rappelle sous 24 h. ${PAYS[pays].zoneCourte}, sans engagement.`}>
+  <Hero h1="Demandez votre devis gratuit" intro="Choisissez votre projet et laissez vos coordonnées : un artisan de votre secteur vous rappelle sous 24 h." crumb={[['Accueil', `/${pays}/`], ['Demande de devis', `/${pays}/devis/`]]}>
+    <DevisForm tuiles={tuiles} metiers={LISTE_METIERS} lieu={PAYS[pays].lieu} />
+  </Hero>
+</Base>

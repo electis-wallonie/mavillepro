@@ -3,24 +3,25 @@ import { ZONES, VILLES_PHARES, parSlug } from '../data/communes';
 import { LISTE_METIERS, type Metier } from '../data/metiers';
 import { a } from '../lib/textes';
 import { u } from '../lib/site';
-type Props = { metier?: Metier; titre: string };
-const { metier, titre } = Astro.props;
+import { PAYS, type P } from '../lib/pays';
+type Props = { metier?: Metier; titre: string; pays: P };
+const { metier, titre, pays } = Astro.props;
+const k = PAYS[pays].code;
 const ms = metier ? [metier] : LISTE_METIERS;
 const m0 = metier ?? LISTE_METIERS[0];
 ---
 <section class="sec" id="zones">
   <div class="wrap">
-    <div class="head"><h2>{titre}</h2><span class="bar"></span><p>Nos artisans interviennent dans deux régions, villes et villages compris.</p></div>
+    <div class="head"><h2>{titre}</h2><span class="bar"></span><p>{PAYS[pays].zone}, villes et villages compris.</p></div>
     <div class="grid">
-      {(['FR', 'BE'] as const).map((k) => (
-        <div class="card zone">
-          <h3>{ZONES[k].nom}</h3>
-          <p class="mu">{ZONES[k].sous}</p>
-          <ul>{VILLES_PHARES[k].map((s) => { const c = parSlug(s)!; return <li><a href={u(`/${m0.slug}/${s}/`)}>{metier ? `${metier.nom} ${a(c.nom)}` : c.nom}</a></li>; })}</ul>
-          <p style="font-weight:700;margin-top:6px">Toutes les communes :</p>
-          <ul>{ZONES[k].regions.flatMap((r) => ms.map((m) => <li><a href={u(`/${m.slug}/${r.slug}/`)}>{m.nom} · {r.nom}</a></li>))}</ul>
-        </div>
-      ))}
+      <div class="card zone">
+        <h3>Villes principales</h3>
+        <ul>{VILLES_PHARES[k].map((s) => { const c = parSlug(s)!; return <li><a href={u(`/${pays}/${m0.slug}/${s}/`)}>{metier ? `${metier.nom} ${a(c.nom)}` : c.nom}</a></li>; })}</ul>
+      </div>
+      <div class="card zone">
+        <h3>Toutes les communes</h3>
+        <ul>{ZONES[k].regions.flatMap((r) => ms.map((m) => <li><a href={u(`/${pays}/${m.slug}/${r.slug}/`)}>{m.nom} · {r.nom}</a></li>))}</ul>
+      </div>
     </div>
   </div>
 </section>

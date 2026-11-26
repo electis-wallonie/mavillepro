@@ -20,5 +20,7 @@ npm run check:site            # contrôles : téléphone, H1, title et descripti
 
 ## Aperçu
 
+Deux sites pays : /fr/ (région orléanaise) et /be/ (Wallonie), reliés par des balises hreflang ; la racine / propose le choix du pays.
+
 Chaque push sur `main` publie l'aperçu sur GitHub Pages : https://electis-wallonie.github.io/mavillepro/
 L'aperçu est bloqué pour les moteurs de recherche (balise noindex et robots.txt). Le formulaire n'y envoie rien.

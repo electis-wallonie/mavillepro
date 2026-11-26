@@ -2,28 +2,37 @@
 import Logo from './Logo.astro';
 import Icon from './Icon.astro';
 import { CTA_COURT, u } from '../lib/site';
-type Props = { actif?: string };
-const { actif } = Astro.props;
-const liens = [
-  ['metallerie', 'Métallerie', '/metallerie/'],
-  ['menuiserie', 'Menuiserie', '/menuiserie/'],
-  ['vitrerie', 'Vitrerie', '/vitrerie/'],
-  ['fonctionnement', 'Comment ça marche', '/fonctionnement/'],
-];
+import { PAYS, type P } from '../lib/pays';
+type Props = { actif?: string; pays?: P; alternates?: Partial<Record<P, string>> };
+const { actif, pays, alternates } = Astro.props;
+const pre = pays ? `/${pays}` : '';
+const liens = pays
+  ? [
+      ['metallerie', 'Métallerie', `${pre}/metallerie/`],
+      ['menuiserie', 'Menuiserie', `${pre}/menuiserie/`],
+      ['vitrerie', 'Vitrerie', `${pre}/vitrerie/`],
+      ['fonctionnement', 'Comment ça marche', `${pre}/fonctionnement/`],
+    ]
+  : [];
+const autre: P | undefined = pays === 'fr' ? 'be' : pays === 'be' ? 'fr' : undefined;
 ---
 <div class="topbar"><div class="wrap">
   <span><b>✓</b> Devis gratuit et sans engagement</span>
   <span><b>✓</b> Réponse sous 24 h</span>
-  <span><b>✓</b> Région orléanaise · Charleroi, Mons, La Louvière, Waterloo</span>
+  {pays && <span><b>✓</b> {PAYS[pays].topbar}</span>}
 </div></div>
 <header class="hdr">
   <div class="wrap">
-    <Logo />
-    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav" aria-label="Ouvrir le menu"><Icon name="menu" /></button>
-    <nav class="nav" id="nav" aria-label="Navigation principale">
-      {liens.map(([k, t, h]) => <a href={u(h)} aria-current={actif === k ? 'page' : undefined}>{t}</a>)}
-    </nav>
-    <a class="btn btn-o" href="#devis">{CTA_COURT}</a>
+    <Logo href={pays ? `/${pays}/` : '/'} />
+    {pays && <span class="pays-tag">{PAYS[pays].nom}</span>}
+    {pays && <>
+      <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav" aria-label="Ouvrir le menu"><Icon name="menu" /></button>
+      <nav class="nav" id="nav" aria-label="Navigation principale">
+        {liens.map(([k, t, h]) => <a href={u(h)} aria-current={actif === k ? 'page' : undefined}>{t}</a>)}
+        {autre && <a class="pays-switch" href={u(alternates?.[autre] ?? `/${autre}/`)} hreflang={PAYS[autre].locale}>{PAYS[autre].nom} →</a>}
+      </nav>
+      <a class="btn btn-o" href="#devis">{CTA_COURT}</a>
+    </>}
   </div>
 </header>
 <script>

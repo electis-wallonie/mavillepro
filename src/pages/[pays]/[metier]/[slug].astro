@@ -1,27 +1,30 @@
 ---
-import Base from '../../layouts/Base.astro';
-import Hero from '../../components/Hero.astro';
-import DevisForm from '../../components/DevisForm.astro';
-import OuvragesCompact from '../../components/OuvragesCompact.astro';
-import Etapes from '../../components/Etapes.astro';
-import Faq from '../../components/Faq.astro';
-import Check from '../../components/Check.astro';
-import Icon from '../../components/Icon.astro';
-import { METIERS, LISTE_METIERS, type Metier } from '../../data/metiers';
-import { PUBLIEES, REGIONS, estPubliee, type Commune } from '../../data/communes';
-import { pageCommune, a, de, FOCUS } from '../../lib/textes';
-import { faqLd, crumbLd, serviceLd } from '../../lib/seo';
-import { BRAND, CTA, u } from '../../lib/site';
+import Base from '../../../layouts/Base.astro';
+import Hero from '../../../components/Hero.astro';
+import DevisForm from '../../../components/DevisForm.astro';
+import OuvragesCompact from '../../../components/OuvragesCompact.astro';
+import Etapes from '../../../components/Etapes.astro';
+import Faq from '../../../components/Faq.astro';
+import Check from '../../../components/Check.astro';
+import Icon from '../../../components/Icon.astro';
+import { METIERS, LISTE_METIERS, type Metier } from '../../../data/metiers';
+import { PUBLIEES, REGIONS, estPubliee, type Commune } from '../../../data/communes';
+import { pageCommune, a, de, FOCUS } from '../../../lib/textes';
+import { faqLd, crumbLd, serviceLd } from '../../../lib/seo';
+import { BRAND, CTA, u } from '../../../lib/site';
+import { pDe, type P } from '../../../lib/pays';
 
 type Region = (typeof REGIONS)[number];
 export function getStaticPaths() {
   return LISTE_METIERS.flatMap((m) => [
-    ...PUBLIEES.map((c) => ({ params: { metier: m.slug, slug: c.slug }, props: { m, c } })),
-    ...REGIONS.map((r) => ({ params: { metier: m.slug, slug: r.slug }, props: { m, r } })),
+    ...PUBLIEES.map((c) => ({ params: { pays: pDe(c.pays), metier: m.slug, slug: c.slug }, props: { m, c } })),
+    ...REGIONS.map((r) => ({ params: { pays: pDe(r.pays), metier: m.slug, slug: r.slug }, props: { m, r } })),
   ]);
 }
 const { m, c, r } = Astro.props as { m: Metier; c?: Commune; r?: Region };
 const site = Astro.site!;
+const pays = Astro.params.pays as P;
+const pre = `/${pays}`;
 const tuiles = m.tuiles.map((slug) => ({ metier: m, slug }));
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
@@ -34,16 +37,16 @@ const rDesc = r ? [`${cap(m.artisan)} dans ${r.art} : ${rc.length} communes dess
 const p = c ? pageCommune(c, m) : null;
 const rg = c ? REGIONS.find((x) => x.slug === c.regionSlug) : r;
 const crumb: [string, string][] = c
-  ? [['Accueil', '/'], [m.nom, `/${m.slug}/`], [rg!.nom, `/${m.slug}/${rg!.slug}/`], [`${m.nom} ${a(c.nom)}`, `/${m.slug}/${c.slug}/`]]
-  : [['Accueil', '/'], [m.nom, `/${m.slug}/`], [r!.nom, `/${m.slug}/${r!.slug}/`]];
+  ? [['Accueil', `${pre}/`], [m.nom, `${pre}/${m.slug}/`], [rg!.nom, `${pre}/${m.slug}/${rg!.slug}/`], [`${m.nom} ${a(c.nom)}`, `${pre}/${m.slug}/${c.slug}/`]]
+  : [['Accueil', `${pre}/`], [m.nom, `${pre}/${m.slug}/`], [r!.nom, `${pre}/${m.slug}/${r!.slug}/`]];
 const faq: [string, string][] = c
   ? p!.faq
   : [...m.faq, ['La demande de devis est-elle gratuite ?', 'Oui, la demande et le devis sont gratuits et sans engagement.']];
-const url = new URL(u(c ? `/${m.slug}/${c.slug}/` : `/${m.slug}/${r!.slug}/`), site).href;
+const url = new URL(u(c ? `${pre}/${m.slug}/${c.slug}/` : `${pre}/${m.slug}/${r!.slug}/`), site).href;
 const autres = LISTE_METIERS.filter((x) => x.slug !== m.slug);
 ---
 {c && p ? (
-  <Base title={p.title} description={p.description} actif={m.slug}
+  <Base pays={pays} title={p.title} description={p.description} actif={m.slug}
     jsonld={[crumbLd(site, crumb, u), serviceLd({ nom: `${m.nom} ${a(c.nom)}`, description: p.description, zone: [c.nom, ...c.voisines.slice(0, 5).map((v) => v.nom)], url }), faqLd(faq)]}>
     <Hero h1={p.h1} intro={p.intro} crumb={crumb}>
       <DevisForm tuiles={tuiles} metiers={[m]} commune={c.nom} cp={c.cp} artisan={m.artisan} lieu={c.pays} />
@@ -76,9 +79,9 @@ const autres = LISTE_METIERS.filter((x) => x.slug !== m.slug);
       <div class="wrap">
         <div class="head"><h2>Nous intervenons aussi autour {de(c.nom)}</h2><span class="bar"></span></div>
         <div class="chips">
-          {c.voisines.map((v) => estPubliee(v.slug) ? <a href={u(`/${m.slug}/${v.slug}/`)}>{m.nom} {a(v.nom)} · {String(v.km).replace('.', ',')} km</a> : <span>{v.nom} · {String(v.km).replace('.', ',')} km</span>)}
+          {c.voisines.map((v) => estPubliee(v.slug) ? <a href={u(`${pre}/${m.slug}/${v.slug}/`)}>{m.nom} {a(v.nom)} · {String(v.km).replace('.', ',')} km</a> : <span>{v.nom} · {String(v.km).replace('.', ',')} km</span>)}
         </div>
-        <p style="text-align:center"><a class="link" href={u(`/${m.slug}/${rg!.slug}/`)}>Voir toutes les communes {rg!.pays === 'BE' ? 'de la zone' : 'du département'} : {m.nom.toLowerCase()} dans {rg!.art} →</a></p>
+        <p style="text-align:center"><a class="link" href={u(`${pre}/${m.slug}/${rg!.slug}/`)}>Voir toutes les communes {rg!.pays === 'BE' ? 'de la zone' : 'du département'} : {m.nom.toLowerCase()} dans {rg!.art} →</a></p>
       </div>
     </section>
 
@@ -87,12 +90,12 @@ const autres = LISTE_METIERS.filter((x) => x.slug !== m.slug);
     <section class="sec blue">
       <div class="wrap">
         <div class="head"><h2>Demandez votre devis {m.nom.toLowerCase()} {a(c.nom)}</h2><p>Une minute pour décrire votre projet, un rappel sous 24 h.</p><a class="btn btn-o" href="#devis">{CTA}</a></div>
-        <p style="text-align:center;color:#dbe5ff">Aussi {a(c.nom)} : {autres.map((x, i) => <>{i > 0 && ' · '}<a style="color:#fff;font-weight:700" href={u(`/${x.slug}/${c.slug}/`)}>{x.nom} {a(c.nom)}</a></>)}</p>
+        <p style="text-align:center;color:#dbe5ff">Aussi {a(c.nom)} : {autres.map((x, i) => <>{i > 0 && ' · '}<a style="color:#fff;font-weight:700" href={u(`${pre}/${x.slug}/${c.slug}/`)}>{x.nom} {a(c.nom)}</a></>)}</p>
       </div>
     </section>
   </Base>
 ) : (
-  <Base title={rTitre} description={rDesc} actif={m.slug} jsonld={[crumbLd(site, crumb, u), faqLd(faq)]}>
+  <Base pays={pays} title={rTitre} description={rDesc} actif={m.slug} jsonld={[crumbLd(site, crumb, u), faqLd(faq)]}>
     <Hero h1={`${cap(m.artisan)} dans ${r!.art} : ${r!.pays === 'BE' ? FOCUS[m.slug].be : FOCUS[m.slug].fr}`} intro={`Décrivez votre projet : un artisan ${m.artisan} qui intervient dans ${r!.art} vous rappelle sous 24 h pour un devis gratuit.`} crumb={crumb}>
       <DevisForm tuiles={tuiles} metiers={[m]} artisan={m.artisan} lieu={r!.pays} />
     </Hero>
@@ -100,7 +103,7 @@ const autres = LISTE_METIERS.filter((x) => x.slug !== m.slug);
       <div class="wrap">
         <div class="head"><h2>Trouvez votre {m.artisan} dans {r!.art}</h2><span class="bar"></span><p>{rc.length} communes desservies. Choisissez la vôtre.</p></div>
         <ul style="list-style:none;margin:0;padding:0;columns:4 200px;column-gap:24px">
-          {rc.map((x) => <li style="padding:4px 0;break-inside:avoid"><a href={u(`/${m.slug}/${x.slug}/`)} style="text-decoration:none;font-weight:600">{m.nom} {a(x.nom)}</a> <span class="mu" style="font-size:13px">({x.cp})</span></li>)}
+          {rc.map((x) => <li style="padding:4px 0;break-inside:avoid"><a href={u(`${pre}/${m.slug}/${x.slug}/`)} style="text-decoration:none;font-weight:600">{m.nom} {a(x.nom)}</a> <span class="mu" style="font-size:13px">({x.cp})</span></li>)}
         </ul>
       </div>
     </section>

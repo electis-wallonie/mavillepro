@@ -1,0 +1,125 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import Hero from '../../components/Hero.astro';
+import DevisForm from '../../components/DevisForm.astro';
+import Etapes from '../../components/Etapes.astro';
+import Faq from '../../components/Faq.astro';
+import Icon from '../../components/Icon.astro';
+import Check from '../../components/Check.astro';
+import { METIERS, LISTE_METIERS } from '../../data/metiers';
+import Zones from '../../components/Zones.astro';
+import { photo } from '../../lib/images';
+import { faqLd } from '../../lib/seo';
+import { BRAND, CTA, SLOGAN, u } from '../../lib/site';
+import { PAYS, LISTE_P, vocab, type P } from '../../lib/pays';
+
+export function getStaticPaths() {
+  return LISTE_P.map((pays) => ({ params: { pays } }));
+}
+const pays = Astro.params.pays as P;
+const PY = PAYS[pays];
+
+const M = METIERS;
+// Tuiles classées selon la demande (Google Trends, 12 derniers mois, France et Wallonie)
+const tuiles = [
+  { metier: M.metallerie, slug: 'portail-battant' },
+  { metier: M.menuiserie, slug: 'porte-garage-sectionnelle' },
+  { metier: M.metallerie, slug: 'pergola' },
+  { metier: M.metallerie, slug: 'cloture' },
+  { metier: M.menuiserie, slug: 'fenetre' },
+  { metier: M.menuiserie, slug: 'volet-roulant' },
+  { metier: M.metallerie, slug: 'carport' },
+  { metier: M.metallerie, slug: 'autre' },
+];
+const vitrines: Record<string, string> = { metallerie: 'portail-battant', menuiserie: 'fenetre', vitrerie: 'double-vitrage' };
+
+const faq: [string, string][] = [
+  ['La demande de devis est-elle gratuite ?', 'Oui. La demande, le rappel et le devis sont gratuits et sans engagement.'],
+  ['Quand serai-je rappelé ?', "Sous 24 h après l'envoi de votre demande, par un artisan de votre secteur."],
+  ['Qui réalise les travaux ?', `Un artisan indépendant de votre région. ${BRAND} transmet votre demande ; c'est l'artisan qui établit le devis, réalise et facture les travaux.`],
+  ['Dans quelles zones intervenez-vous ?', PY.faqZone],
+  ['Pourquoi n’y a-t-il pas de numéro de téléphone ?', "Pour que votre demande parvienne directement à l'artisan disponible le plus proche : c'est lui qui vous appelle, sous 24 h."],
+  ['Mes coordonnées sont-elles revendues ?', "Non. Elles sont transmises uniquement à l'artisan qui traite votre demande."],
+];
+const avantages = [
+  ['clock', 'Rappel sous 24 h', 'Votre demande est transmise tout de suite à un artisan disponible.'],
+  ['map', 'Artisans locaux', 'Des professionnels qui travaillent près de chez vous.'],
+  ['doc', 'Devis écrit et gratuit', 'Le prix est fixé par écrit avant tout démarrage.'],
+  ['ruler', 'Sur mesure', 'Mesures prises chez vous, fabrication aux bonnes dimensions.'],
+];
+---
+<Base pays={pays} alternates={{ fr: "/fr/", be: "/be/" }}
+  title={pays === 'be' ? 'Métallier, menuisier, vitrier en Wallonie : devis sous 24 h' : 'Métallier, menuisier, vitrier à Orléans : devis sous 24 h'}
+  description={pays === 'be' ? 'Portail, porte de garage, pergola, châssis, volets : un artisan vous rappelle sous 24 h. Charleroi, Mons, La Louvière, Waterloo, Namur.' : 'Portail, porte de garage, pergola, fenêtres, volets : un artisan vous rappelle sous 24 h. Orléans et 50 km autour.'}
+  jsonld={[faqLd(faq)]}
+>
+  <Hero h1={pays === 'be' ? 'Trouvez votre artisan en Wallonie : métallerie, menuiserie, vitrerie' : 'Trouvez votre artisan dans la région orléanaise : métallerie, menuiserie, vitrerie'} intro={PY.heroIntro}>
+    <DevisForm tuiles={tuiles} metiers={LISTE_METIERS} lieu={PY.lieu} />
+  </Hero>
+
+  <section class="sec" style="padding-block:32px">
+    <div class="wrap">
+      <div class="grid">
+        {avantages.map(([i, t, d]) => (
+          <div style="display:flex;gap:14px;align-items:flex-start"><span class="ico"><Icon name={i} color="#F8863D" /></span><span><strong>{t}</strong><br /><span class="mu" style="font-size:15px">{d}</span></span></div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="sec alt" id="metiers">
+    <div class="wrap">
+      <div class="head"><h2>Nos métiers</h2><span class="bar"></span><p>Trois métiers du bâtiment, des artisans spécialisés pour chacun.</p></div>
+      <div class="grid">
+        {LISTE_METIERS.map((m) => {
+          const im = vitrines[m.slug] ? photo(m.slug, vitrines[m.slug]) : undefined;
+          return (
+            <a class="card metier" href={u(`/${pays}/${m.slug}/`)}>
+              <span class="ph">{im ? <Image src={im} alt={`${m.nom} sur mesure`} width={320} /> : <Icon name={m.icone} size={72} color="#0034B8" stroke={1.5} />}</span>
+              <h3>{m.nom}</h3>
+              <p class="mu">{vocab(m.accroche, pays)}</p>
+              <span class="link">Voir les prestations →</span>
+            </a>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+  <Etapes />
+
+  <section class="sec blue">
+    <div class="wrap">
+      <div class="head"><h2>Pourquoi passer par {BRAND} ?</h2><span class="bar"></span></div>
+      <div class="grid">
+        {[
+          ['Une seule demande', 'Plus besoin d’appeler plusieurs entreprises : on trouve pour vous un artisan disponible.'],
+          ['Un artisan de votre secteur', 'Il connaît les maisons, les règles et les fournisseurs de votre région.'],
+          ['Aucun frais pour vous', 'La mise en relation est gratuite. Vous ne payez que les travaux, si vous acceptez le devis.'],
+          ['Vous gardez la main', 'Vous parlez directement avec l’artisan et décidez librement.'],
+        ].map(([t, d]) => <div class="why"><span class="chk" style="width:44px;height:44px;border-radius:12px"><Icon name="check" color="#1a1a1a" stroke={3} /></span><strong>{t}</strong><span>{d}</span></div>)}
+      </div>
+      <a class="btn btn-o" style="align-self:center" href="#devis">{CTA}</a>
+    </div>
+  </section>
+
+  <Zones pays={pays} titre="Trouvez votre artisan près de chez vous" />
+
+  <section class="sec alt">
+    <div class="wrap split">
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <h2>Un projet ? Demandez votre devis maintenant</h2>
+        <p class="mu">Décrivez votre projet en une minute. Un artisan vous rappelle sous 24 h.</p>
+        <ul class="list">
+          <li><Check />Aucun numéro à appeler : c’est l’artisan qui vous rappelle</li>
+          <li><Check />Devis écrit, gratuit et sans engagement</li>
+          <li><Check />Vos coordonnées ne sont pas revendues</li>
+        </ul>
+      </div>
+      <DevisForm id="devis-bas" tuiles={tuiles} metiers={LISTE_METIERS} lieu={PY.lieu} />
+    </div>
+  </section>
+
+  <Faq titre="Questions fréquentes" items={faq} />
+</Base>

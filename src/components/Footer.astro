@@ -3,20 +3,26 @@ import Logo from './Logo.astro';
 import { LISTE_METIERS } from '../data/metiers';
 import { REGIONS } from '../data/communes';
 import { BRAND, SLOGAN, u } from '../lib/site';
+import { PAYS, type P } from '../lib/pays';
+type Props = { pays?: P };
+const { pays } = Astro.props;
 const an = new Date().getFullYear();
-const pages = REGIONS.map((r) => [`/metallerie/${r.slug}/`, `Artisans ${r.pays === 'BE' ? 'en' : 'dans'} ${r.pays === 'BE' ? r.nom : r.art}`]);
+const pre = pays ? `/${pays}` : '';
+const regions = pays ? REGIONS.filter((r) => r.pays === PAYS[pays].code) : [];
 ---
 <footer class="ftr">
   <div class="wrap">
     <div>
-      <Logo light />
+      <Logo light href={pays ? `/${pays}/` : '/'} />
       <p style="margin-top:14px">{SLOGAN}. Décrivez votre projet, un artisan de votre secteur vous rappelle sous 24 h.</p>
     </div>
-    <div><strong>Nos métiers</strong><ul>{LISTE_METIERS.map((m) => <li><a href={u(`/${m.slug}/`)}>{m.nom}</a></li>)}</ul></div>
-    <div><strong>Nos zones</strong><ul>{pages.map(([h, t]) => <li><a href={u(h)}>{t}</a></li>)}</ul></div>
+    {pays && <div><strong>Nos métiers</strong><ul>{LISTE_METIERS.map((m) => <li><a href={u(`${pre}/${m.slug}/`)}>{m.nom}</a></li>)}</ul></div>}
+    {pays && <div><strong>Nos zones en {PAYS[pays].nom}</strong><ul>{regions.map((r) => <li><a href={u(`${pre}/metallerie/${r.slug}/`)}>{r.nom}</a></li>)}</ul></div>}
     <div><strong>{BRAND}</strong><ul>
-      <li><a href={u('/fonctionnement/')}>Comment ça marche</a></li>
-      <li><a href={u('/devis/')}>Demander un devis</a></li>
+      {pays && <li><a href={u(`${pre}/fonctionnement/`)}>Comment ça marche</a></li>}
+      {pays && <li><a href={u(`${pre}/devis/`)}>Demander un devis</a></li>}
+      <li><a href={u('/fr/')}>MaVillePro France</a></li>
+      <li><a href={u('/be/')}>MaVillePro Belgique</a></li>
       <li><a href={u('/mentions-legales/')}>Mentions légales</a></li>
       <li><a href={u('/confidentialite/')}>Confidentialité</a></li>
     </ul></div>

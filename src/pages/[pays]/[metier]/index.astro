@@ -1,0 +1,43 @@
+---
+import Base from '../../../layouts/Base.astro';
+import Hero from '../../../components/Hero.astro';
+import DevisForm from '../../../components/DevisForm.astro';
+import Ouvrages from '../../../components/Ouvrages.astro';
+import Etapes from '../../../components/Etapes.astro';
+import Faq from '../../../components/Faq.astro';
+import CtaBand from '../../../components/CtaBand.astro';
+import { METIERS, type Metier } from '../../../data/metiers';
+import Zones from '../../../components/Zones.astro';
+import { ZONES } from '../../../data/communes';
+import { faqLd, crumbLd, serviceLd } from '../../../lib/seo';
+import { BRAND, u } from '../../../lib/site';
+import { PAYS, LISTE_P, vocab, type P } from '../../../lib/pays';
+
+export function getStaticPaths() {
+  return LISTE_P.flatMap((pays) => Object.values(METIERS).map((m) => ({ params: { pays, metier: m.slug }, props: { m } })));
+}
+const { m } = Astro.props as { m: Metier };
+const pays = Astro.params.pays as P;
+const PY = PAYS[pays];
+const zoneTxt = pays === 'be' ? 'en Wallonie' : 'dans la région orléanaise';
+const crumb: [string, string][] = [['Accueil', `/${pays}/`], [m.nom, `/${pays}/${m.slug}/`]];
+const faq: [string, string][] = [
+  ...m.faq,
+  ['La demande de devis est-elle gratuite ?', 'Oui, la demande et le devis sont gratuits et sans engagement.'],
+  ['Qui réalise les travaux ?', `Un artisan ${m.artisan} indépendant de votre secteur. ${BRAND} assure la mise en relation ; l'artisan établit le devis et réalise les travaux.`],
+];
+const title = `${m.nom} ${zoneTxt} : devis gratuit sous 24 h`;
+const description = [`${vocab(m.accroche, pays)} Rappel sous 24 h, devis gratuit. ${PY.zoneCourte}.`, `${vocab(m.accroche, pays)} Rappel sous 24 h, devis gratuit.`].find((d) => d.length <= 158)!;
+const site = Astro.site!;
+---
+<Base pays={pays} alternates={{ fr: `/fr/${m.slug}/`, be: `/be/${m.slug}/` }} title={title} description={description} actif={m.slug}
+  jsonld={[crumbLd(site, crumb, u), serviceLd({ nom: m.nom, description, zone: ZONES[PY.code].regions.map((r) => r.nom), url: new URL(u(`/${pays}/${m.slug}/`), site).href }), faqLd(faq)]}>
+  <Hero h1={`${vocab(m.h1, pays)} ${zoneTxt}`} intro={vocab(m.intro, pays)} crumb={crumb}>
+    <DevisForm tuiles={m.tuiles.map((slug) => ({ metier: m, slug }))} metiers={[m]} artisan={m.artisan} lieu={PY.lieu} />
+  </Hero>
+  <Ouvrages metier={m} pays={pays} />
+  <Etapes titre={`Comment se déroule votre projet de ${m.nom.toLowerCase()} ?`} artisan={m.artisan} />
+  <Zones pays={pays} metier={m} titre={`Trouvez votre ${m.artisan} près de chez vous`} />
+  <Faq titre={`Questions fréquentes sur la ${m.nom.toLowerCase()}`} items={faq} />
+  <CtaBand titre={`Un projet de ${m.nom.toLowerCase()} ?`} texte={`Décrivez-le en une minute : un ${m.artisan} vous rappelle sous 24 h.`} />
+</Base>

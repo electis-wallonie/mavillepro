@@ -177,3 +177,9 @@ p { margin: 0; }
   .topbar span:nth-child(3) { display: none; }
 }
 .pc span span { display: inline; padding: 0; border: 0; }
+.pays-tag { font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--b); background: var(--pa); padding: 4px 10px; border-radius: 999px; }
+.nav .pays-switch { color: var(--mu); font-size: 14px; }
+.choix { display: grid; gap: 24px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); max-width: 900px; margin: 0 auto; width: 100%; }
+.choix a { text-decoration: none; color: var(--ink); display: flex; flex-direction: column; gap: 10px; }
+.choix a strong { font-size: 26px; color: var(--b); }
+.choix a.suggere { outline: 3px solid var(--o); }

@@ -1,9 +1,9 @@
 ---
 import { u } from '../lib/site';
-type Props = { light?: boolean };
-const { light = false } = Astro.props;
+type Props = { light?: boolean; href?: string };
+const { light = false, href = '/' } = Astro.props;
 ---
-<a class="logo" href={u('/')} aria-label="MaVillePro, accueil">
+<a class="logo" href={u(href)} aria-label="MaVillePro, accueil">
   <svg width="38" height="38" viewBox="0 0 40 40" aria-hidden="true">
     <rect width="40" height="40" rx="10" fill={light ? '#ffffff' : '#0034B8'} />
     <path d="M20 8l11 9v14H9V17z" fill="none" stroke={light ? '#0034B8' : '#ffffff'} stroke-width="3" stroke-linejoin="round" />
