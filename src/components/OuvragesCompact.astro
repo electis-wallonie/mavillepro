@@ -1,0 +1,31 @@
+---
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import { photo } from '../lib/images';
+import { label, type Metier } from '../data/metiers';
+type Props = { metier: Metier; top: string[]; titre: string; texte: string; lieu?: string; sansAutres?: boolean };
+const { metier: m, top, titre, texte, lieu, sansAutres = false } = Astro.props;
+const autres = sansAutres ? [] : m.prestations.filter((p) => !top.includes(p.slug));
+---
+<section class="sec alt" id="prestations">
+  <div class="wrap">
+    <div class="head"><h2>{titre}</h2><span class="bar"></span><p>{texte}</p></div>
+    <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(min(100%,200px),1fr))">
+      {top.map((s) => {
+        const im = photo(m.slug, s);
+        return (
+          <a class="pc" href="#devis" data-preset={label(m, s)} data-m={m.nom} style="text-decoration:none;color:inherit">
+            <div class="v">{im ? <Image src={im} alt={`${label(m, s)} sur mesure${lieu ? ' ' + lieu : ''}`} width={280} loading="lazy" /> : <Icon name={m.icone} size={56} color="#0034B8" stroke={1.5} />}</div>
+            <span>{label(m, s)} <span style="color:#F8863D">→</span></span>
+          </a>
+        );
+      })}
+    </div>
+    {autres.length > 0 && (
+      <div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+        <h3 style="font-size:18px">Autres travaux de {m.nom.toLowerCase()}{lieu ? ` ${lieu}` : ''}</h3>
+        <div class="chips">{autres.map((p) => <a href="#devis" data-preset="Autre projet" data-m={m.nom}>{p.label}</a>)}</div>
+      </div>
+    )}
+  </div>
+</section>

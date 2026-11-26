@@ -3,7 +3,9 @@
 Site de demandes de devis en métallerie, menuiserie et vitrerie (région orléanaise, Charleroi, Mons, La Louvière, Waterloo).
 
 - Générateur : [Astro](https://astro.build), pages statiques.
-- Données : `src/data/metiers.ts` (métiers, prestations) et `src/data/communes.ts` (une fiche par commune ; une page n'existe que si sa fiche existe).
+- Données : `src/data/metiers.ts` (métiers, prestations), `src/data/zone-fr.json` (352 communes à 50 km d'Orléans, geo.api.gouv.fr) et `src/data/zone-be.json` (858 localités wallonnes à 70 km de Charleroi). `src/data/communes.ts` calcule voisines, distances, secteur et vague de publication.
+- Textes des pages commune : `src/lib/textes.ts`.
+- Vagues : `VAGUE=1` (défaut) publie les communes FR de plus de 1 000 habitants et 67 communes et sections belges ; `VAGUE=2` et `VAGUE=3` ajoutent le reste.
 - Photos : `src/assets/prestations/<métier>/<prestation>.jpg`.
 
 ## Commandes

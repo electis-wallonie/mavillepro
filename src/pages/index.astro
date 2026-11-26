@@ -8,7 +8,7 @@ import Faq from '../components/Faq.astro';
 import Icon from '../components/Icon.astro';
 import Check from '../components/Check.astro';
 import { METIERS, LISTE_METIERS } from '../data/metiers';
-import { ZONES, pageCommune } from '../data/communes';
+import Zones from '../components/Zones.astro';
 import { photo } from '../lib/images';
 import { faqLd } from '../lib/seo';
 import { BRAND, CTA, SLOGAN, u } from '../lib/site';
@@ -96,25 +96,7 @@ const avantages = [
     </div>
   </section>
 
-  <section class="sec" id="zones">
-    <div class="wrap">
-      <div class="head"><h2>Trouvez votre artisan près de chez vous</h2><span class="bar"></span><p>Nos artisans interviennent dans deux régions.</p></div>
-      <div class="grid">
-        {Object.values(ZONES).map((z) => (
-          <div class="card zone">
-            <h3>{z.nom}</h3>
-            <p class="mu">{z.sous}</p>
-            <ul>
-              {z.villes.map((v) => {
-                const h = pageCommune('metallerie', v);
-                return <li>{h ? <a href={u(h)}>{v}</a> : v}</li>;
-              })}
-            </ul>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
+  <Zones titre="Trouvez votre artisan près de chez vous" />
 
   <section class="sec alt">
     <div class="wrap split">

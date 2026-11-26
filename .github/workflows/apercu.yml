@@ -27,6 +27,7 @@ jobs:
       - run: npm run build
         env:
           PREVIEW: '1'
+          VAGUE: '1'
       - run: npm run check:site
       - uses: actions/configure-pages@v5
         with:

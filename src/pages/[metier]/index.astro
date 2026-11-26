@@ -7,7 +7,8 @@ import Etapes from '../../components/Etapes.astro';
 import Faq from '../../components/Faq.astro';
 import CtaBand from '../../components/CtaBand.astro';
 import { METIERS, type Metier } from '../../data/metiers';
-import { ZONES, pageCommune } from '../../data/communes';
+import Zones from '../../components/Zones.astro';
+import { ZONES } from '../../data/communes';
 import { faqLd, crumbLd, serviceLd } from '../../lib/seo';
 import { BRAND, u } from '../../lib/site';
 
@@ -26,24 +27,13 @@ const description = `${m.accroche} Un artisan ${m.artisan} de votre secteur vous
 const site = Astro.site!;
 ---
 <Base title={title} description={description} actif={m.slug}
-  jsonld={[crumbLd(site, crumb, u), serviceLd({ nom: m.nom, description, zone: [...ZONES.FR.villes, ...ZONES.BE.villes], url: new URL(u(`/${m.slug}/`), site).href }), faqLd(faq)]}>
+  jsonld={[crumbLd(site, crumb, u), serviceLd({ nom: m.nom, description, zone: [...ZONES.FR.regions, ...ZONES.BE.regions].map((r) => r.nom), url: new URL(u(`/${m.slug}/`), site).href }), faqLd(faq)]}>
   <Hero h1={m.h1} intro={m.intro} crumb={crumb}>
     <DevisForm tuiles={m.tuiles.map((slug) => ({ metier: m, slug }))} metiers={[m]} artisan={m.artisan} />
   </Hero>
   <Ouvrages metier={m} />
   <Etapes titre={`Comment se déroule votre projet de ${m.nom.toLowerCase()} ?`} artisan={m.artisan} />
-  <section class="sec alt" id="zones">
-    <div class="wrap">
-      <div class="head"><h2>Trouvez votre {m.artisan} près de chez vous</h2><span class="bar"></span></div>
-      <div class="grid">
-        {Object.values(ZONES).map((z) => (
-          <div class="card zone"><h3>{z.nom}</h3><p class="mu">{z.sous}</p>
-            <ul>{z.villes.map((v) => { const h = pageCommune(m.slug, v); return <li>{h ? <a href={u(h)}>{m.nom} à {v}</a> : v}</li>; })}</ul>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
+  <Zones metier={m} titre={`Trouvez votre ${m.artisan} près de chez vous`} />
   <Faq titre={`Questions fréquentes sur la ${m.nom.toLowerCase()}`} items={faq} />
   <CtaBand titre={`Un projet de ${m.nom.toLowerCase()} ?`} texte={`Décrivez-le en une minute : un ${m.artisan} vous rappelle sous 24 h.`} />
 </Base>

@@ -176,3 +176,4 @@ p { margin: 0; }
   .hero .wrap { grid-template-columns: minmax(0, 1fr); grid-template-areas: 'a' 'f' 'b'; padding-top: 24px; padding-bottom: 40px; gap: 20px; }
   .topbar span:nth-child(3) { display: none; }
 }
+.pc span span { display: inline; padding: 0; border: 0; }

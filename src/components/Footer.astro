@@ -1,10 +1,10 @@
 ---
 import Logo from './Logo.astro';
 import { LISTE_METIERS } from '../data/metiers';
-import { COMMUNES } from '../data/communes';
+import { REGIONS } from '../data/communes';
 import { BRAND, SLOGAN, u } from '../lib/site';
 const an = new Date().getFullYear();
-const pages = COMMUNES.flatMap((c) => Object.keys(c.metiers).map((m) => [`/${m}/${c.slug}/`, `${LISTE_METIERS.find((x) => x.slug === m)!.nom} à ${c.nom}`]));
+const pages = REGIONS.map((r) => [`/metallerie/${r.slug}/`, `Artisans ${r.pays === 'BE' ? 'en' : 'dans'} ${r.pays === 'BE' ? r.nom : r.art}`]);
 ---
 <footer class="ftr">
   <div class="wrap">
@@ -13,7 +13,7 @@ const pages = COMMUNES.flatMap((c) => Object.keys(c.metiers).map((m) => [`/${m}/
       <p style="margin-top:14px">{SLOGAN}. Décrivez votre projet, un artisan de votre secteur vous rappelle sous 24 h.</p>
     </div>
     <div><strong>Nos métiers</strong><ul>{LISTE_METIERS.map((m) => <li><a href={u(`/${m.slug}/`)}>{m.nom}</a></li>)}</ul></div>
-    <div><strong>Près de chez vous</strong><ul>{pages.map(([h, t]) => <li><a href={u(h)}>{t}</a></li>)}</ul></div>
+    <div><strong>Nos zones</strong><ul>{pages.map(([h, t]) => <li><a href={u(h)}>{t}</a></li>)}</ul></div>
     <div><strong>{BRAND}</strong><ul>
       <li><a href={u('/fonctionnement/')}>Comment ça marche</a></li>
       <li><a href={u('/devis/')}>Demander un devis</a></li>
