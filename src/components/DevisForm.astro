@@ -68,6 +68,7 @@ const merci = commune ? `Un ${artisan} ${de(commune)} ou des environs vous rappe
     <label class="hp" aria-hidden="true">Ne pas remplir<input name="site_web" tabindex="-1" autocomplete="off" /></label>
     <p class="js-err" role="alert" style="color:#b42318;font-weight:700;font-size:14px" hidden>Merci de remplir votre prénom, votre nom, un téléphone, un e-mail, votre code postal et votre ville.</p>
     <button type="submit" class="btn btn-o">{CTA}</button>
+    <p class="mention">Gratuit et sans engagement. Vos coordonnées sont transmises uniquement à l'artisan qui traite votre demande. <a href={u('/confidentialite/')}>Confidentialité</a></p>
   </div>
 
   <div class="js-s3 done" hidden>
@@ -76,7 +77,6 @@ const merci = commune ? `Un ${artisan} ${de(commune)} ou des environs vous rappe
     <span class="mu">{merci}</span>
   </div>
 
-  <p class="mention">Gratuit et sans engagement. Vos coordonnées sont transmises uniquement à l'artisan qui traite votre demande. <a href={u('/confidentialite/')}>Confidentialité</a></p>
   <div class="reass"><span><Check />Gratuit</span><span><Check />Sans engagement</span><span><Check />Rappel sous 24 h</span></div>
 </form>
 
