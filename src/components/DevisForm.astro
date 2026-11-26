@@ -7,8 +7,8 @@ import { label, type Metier } from '../data/metiers';
 import { CTA, u } from '../lib/site';
 
 type Tuile = { metier: Metier; slug: string };
-type Props = { id?: string; tuiles: Tuile[]; metiers: Metier[]; commune?: string; artisan?: string };
-const { id = 'devis', tuiles, metiers, commune = '', artisan = 'artisan' } = Astro.props;
+type Props = { id?: string; tuiles: Tuile[]; metiers: Metier[]; commune?: string; cp?: string; artisan?: string };
+const { id = 'devis', tuiles, metiers, commune = '', cp = '', artisan = 'artisan' } = Astro.props;
 const endpoint = import.meta.env.PUBLIC_FORM_ENDPOINT ?? '';
 const de = (n: string) => (/^[AEIOUYÉÈÊÀÂÎÔ]/i.test(n) ? `d'${n}` : `de ${n}`);
 const merci = commune ? `Un ${artisan} ${de(commune)} ou des environs vous rappelle sous 24 h.` : `Un ${artisan} de votre secteur vous rappelle sous 24 h.`;
@@ -54,14 +54,18 @@ const merci = commune ? `Un ${artisan} ${de(commune)} ou des environs vous rappe
       <label>Nom<input name="nom" autocomplete="family-name" required /></label>
       <label>Téléphone<input name="telephone" type="tel" autocomplete="tel" inputmode="tel" required /></label>
       <label>E-mail<input name="email" type="email" autocomplete="email" required /></label>
+      <label>Code postal<input name="code_postal" autocomplete="postal-code" inputmode="numeric" maxlength="5" value={cp} placeholder="45000 ou 6000" required /></label>
+      <label>Ville<input name="ville" autocomplete="address-level2" value={commune} required /></label>
     </div>
+    <p class="js-dep mu" style="font-size:13px;margin-top:-4px" aria-live="polite"></p>
     <label>Message<textarea name="message" rows="3" placeholder="Décrivez votre projet en quelques mots (lieu, délai souhaité…)"></textarea></label>
     <input type="hidden" name="ouvrage" />
     <input type="hidden" name="metier" />
     <input type="hidden" name="commune" value={commune} />
+    <input type="hidden" name="departement" />
     <input type="hidden" name="page" />
     <label class="hp" aria-hidden="true">Ne pas remplir<input name="site_web" tabindex="-1" autocomplete="off" /></label>
-    <p class="js-err" role="alert" style="color:#b42318;font-weight:700;font-size:14px" hidden>Merci de remplir votre prénom, votre nom, un téléphone et un e-mail valides.</p>
+    <p class="js-err" role="alert" style="color:#b42318;font-weight:700;font-size:14px" hidden>Merci de remplir votre prénom, votre nom, un téléphone, un e-mail, votre code postal et votre ville.</p>
     <button type="submit" class="btn btn-o">{CTA}</button>
   </div>
 
@@ -96,6 +100,28 @@ const merci = commune ? `Un ${artisan} ${de(commune)} ou des environs vous rappe
       show(2);
       (f.elements.namedItem('prenom') as HTMLInputElement).focus({ preventScroll: true });
     };
+    // Département (France, 5 chiffres) ou province (Belgique, 4 chiffres) à partir du code postal
+    const zone = (cp: string) => {
+      if (/^\d{5}$/.test(cp)) {
+        const d = cp.startsWith('20') ? (Number(cp) < 20200 ? '2A' : '2B') : cp.slice(0, 2);
+        const noms: Record<string, string> = { '45': 'Loiret', '41': 'Loir-et-Cher', '28': 'Eure-et-Loir', '18': 'Cher', '89': 'Yonne', '91': 'Essonne', '77': 'Seine-et-Marne', '58': 'Nièvre' };
+        return `France · ${noms[d] ? noms[d] + ' ' : 'département '}(${d})`;
+      }
+      if (/^\d{4}$/.test(cp)) {
+        const n = Number(cp);
+        const p = n < 1300 ? 'Bruxelles' : n < 1500 ? 'Brabant wallon' : n < 2000 ? 'Brabant flamand' : n < 3000 ? 'Anvers' : n < 3500 ? 'Brabant flamand' : n < 4000 ? 'Limbourg' : n < 5000 ? 'Liège' : n < 6000 ? 'Namur' : n < 6600 ? 'Hainaut' : n < 7000 ? 'Luxembourg' : n < 8000 ? 'Hainaut' : n < 9000 ? 'Flandre-Occidentale' : 'Flandre-Orientale';
+        return `Belgique · province : ${p}`;
+      }
+      return '';
+    };
+    const cpIn = f.elements.namedItem('code_postal') as HTMLInputElement;
+    const majZone = () => {
+      const z = zone(cpIn.value.trim());
+      (f.elements.namedItem('departement') as HTMLInputElement).value = z;
+      q<HTMLElement>('.js-dep').textContent = z;
+    };
+    cpIn.addEventListener('input', majZone);
+    majZone();
     f.querySelectorAll<HTMLButtonElement>('.tile').forEach((t) => t.addEventListener('click', () => choisir(t.dataset.o!, t.dataset.m!)));
     q<HTMLButtonElement>('.js-back').addEventListener('click', () => show(1));
     // Boutons « Devis portail gratuit » ailleurs dans la page
@@ -105,7 +131,8 @@ const merci = commune ? `Un ${artisan} ${de(commune)} ou des environs vous rappe
       e.preventDefault();
       const d = new FormData(f);
       const tel = String(d.get('telephone') || '').replace(/[^\d+]/g, '');
-      const ok = d.get('prenom') && d.get('nom') && tel.length >= 9 && /\S+@\S+\.\S+/.test(String(d.get('email')));
+      majZone();
+      const ok = d.get('prenom') && d.get('nom') && tel.length >= 9 && /\S+@\S+\.\S+/.test(String(d.get('email'))) && /^\d{4,5}$/.test(String(d.get('code_postal')).trim()) && String(d.get('ville')).trim();
       q<HTMLElement>('.js-err').hidden = !!ok;
       if (!ok || d.get('site_web')) return;
       d.set('page', location.pathname);

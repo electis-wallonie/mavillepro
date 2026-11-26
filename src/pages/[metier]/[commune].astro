@@ -40,7 +40,7 @@ const url = new URL(u(`/${m.slug}/${c.slug}/`), site).href;
 <Base title={t.title} description={t.description} actif={m.slug}
   jsonld={[crumbLd(site, crumb, u), serviceLd({ nom: `${m.nom} à ${c.nom}`, description: t.description, zone: [c.nom, ...c.voisines], url }), faqLd(faq)]}>
   <Hero h1={t.h1} intro={t.intro} crumb={crumb}>
-    <DevisForm tuiles={m.tuiles.map((slug) => ({ metier: m, slug }))} metiers={[m]} commune={c.nom} artisan={m.artisan} />
+    <DevisForm tuiles={m.tuiles.map((slug) => ({ metier: m, slug }))} metiers={[m]} commune={c.nom} cp={c.cp} artisan={m.artisan} />
   </Hero>
 
   <section class="sec">
@@ -112,7 +112,7 @@ const url = new URL(u(`/${m.slug}/${c.slug}/`), site).href;
           {autresMetiers.map((x) => { const h = pageCommune(x.slug, c.nom); return <li><Check /><span>{h ? <a href={u(h)}>{x.nom} à {c.nom}</a> : <a href={u(`/${x.slug}/`)}>{x.nom}</a>} <span class="mu">— {x.accroche}</span></span></li>; })}
         </ul>
       </div>
-      <DevisForm id="devis-bas" tuiles={m.tuiles.map((slug) => ({ metier: m, slug }))} metiers={[m]} commune={c.nom} artisan={m.artisan} />
+      <DevisForm id="devis-bas" tuiles={m.tuiles.map((slug) => ({ metier: m, slug }))} metiers={[m]} commune={c.nom} cp={c.cp} artisan={m.artisan} />
     </div>
   </section>
 </Base>
